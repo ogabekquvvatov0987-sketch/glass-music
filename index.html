@@ -148,20 +148,46 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 .mf{display:flex;gap:8px;margin-top:4px}
 #gWrap{min-height:44px;display:flex;flex-direction:column;align-items:center;gap:6px}
 
-/* reels - lightweight: one iframe at a time */
+/* reels */
 .reels{position:fixed;inset:0;z-index:110;background:#000;display:none;flex-direction:column}
 .reels.on{display:flex}
-.rtop{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;padding-top:max(10px,env(safe-area-inset-top));background:linear-gradient(#000a,transparent)}
+.rtop{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;padding-top:max(12px,env(safe-area-inset-top));
+  background:linear-gradient(to bottom,rgba(0,0,0,.65),transparent);pointer-events:none}
+.rtop button{pointer-events:auto}
 .rfeed{flex:1;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;height:100%}
-.reel{height:100dvh;scroll-snap-align:start;position:relative;background:#000}
+.reel{height:100dvh;height:100svh;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:#000;overflow:hidden}
 .rbox{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-.rbox iframe{width:100%;height:100%;max-width:480px;border:0;background:#000}
-.rui{position:absolute;right:10px;bottom:90px;z-index:4;display:flex;flex-direction:column;gap:14px}
-.ract{width:46px;height:46px;border-radius:50%;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;display:grid;place-items:center}
+.rbox iframe{width:100%;height:100%;max-width:560px;border:0;background:#000}
+.rui{
+  position:absolute;right:max(10px,env(safe-area-inset-right));
+  bottom:max(110px,calc(env(safe-area-inset-bottom) + 100px));
+  z-index:5;display:flex;flex-direction:column;gap:16px;align-items:center;
+}
+.ract{
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.22);color:#fff;font-size:17px;
+  display:grid;place-items:center;flex-shrink:0;
+}
 .ract.on{color:#f472b6}
-.rinfo{position:absolute;left:12px;right:64px;bottom:36px;z-index:4;color:#fff;text-shadow:0 1px 3px #000}
-.rinfo .t{font-weight:700;font-size:13px;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.rinfo .c{font-size:11px;opacity:.85}
+.ract-lab{font-size:10px;color:#fff;text-align:center;margin-top:2px;text-shadow:0 1px 2px #000;font-weight:600}
+.rinfo{
+  position:absolute;left:max(12px,env(safe-area-inset-left));
+  right:72px;bottom:max(28px,env(safe-area-inset-bottom));
+  z-index:5;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7);
+  padding-bottom:8px;pointer-events:none;
+}
+.rinfo .chrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;pointer-events:auto}
+.rinfo .chav{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(255,255,255,.5);background:#333;flex-shrink:0}
+.rinfo .chn{font-weight:700;font-size:13px}
+.rinfo .t{font-weight:650;font-size:13px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:4px}
+.rinfo .stats{font-size:11px;opacity:.9;display:flex;flex-wrap:wrap;gap:10px}
+.card-stats{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:10px;color:var(--m)}
+.card-stats span{display:inline-flex;align-items:center;gap:3px}
+.chrow-card{display:flex;align-items:center;gap:7px;margin-top:6px}
+.chav-sm{width:22px;height:22px;border-radius:50%;object-fit:cover;background:#222;flex-shrink:0}
+
 
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:rgba(18,20,32,.96);border:1px solid var(--line);border-radius:999px;padding:10px 16px;font-size:12px;z-index:200;opacity:0;transition:.25s;pointer-events:none;max-width:88vw;text-align:center}
 .toast.on{transform:translateX(-50%);opacity:1}
@@ -310,6 +336,7 @@ const PK="gm_profile";
 
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
 function clean(s){if(!s)return"";const t=document.createElement("textarea");t.innerHTML=s;return t.value.replace(/[\x00-\x1f]/g,"").trim()}
+function fmtN(n){n=Number(n)||0;if(n>=1e6)return(n/1e6).toFixed(1).replace(/\.0$/,"")+"M";if(n>=1e3)return(n/1e3).toFixed(1).replace(/\.0$/,"")+"K";return String(n)}
 function toast(m,ms=2400){toastEl.textContent=m;toastEl.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>toastEl.classList.remove("on"),ms)}
 
 function profile(){try{return JSON.parse(localStorage.getItem(PK))||null}catch{return null}}
@@ -489,8 +516,11 @@ function card(v,i){
   const title=clean(v.title)||"Video",ch=clean(v.channel)||"YouTube";
   const th=v.thumbnail||("https://i.ytimg.com/vi/"+v.id+"/hqdefault.jpg");
   const isL=liked.has(v.id);
+  const chAv=v.channelThumb||"";
   el.innerHTML=`<div class="tw"><img class="th" loading="lazy" alt="" src="${esc(th)}"></div>
-  <div class="cb"><div class="vt">${esc(title)}</div><div class="ch">${esc(ch)}</div>
+  <div class="cb"><div class="vt">${esc(title)}</div>
+  <div class="chrow-card">${chAv?`<img class="chav-sm" src="${esc(chAv)}" alt="">`:""}<div class="ch">${esc(ch)}</div></div>
+  <div class="card-stats"><span>▶ ${fmtN(v.views)}</span><span>♥ ${fmtN(v.likes)}</span><span>💬 ${fmtN(v.comments)}</span></div>
   <div class="ca"><button class="sb ${isL?"liked":""}" data-lk type="button">${isL?"♥":"♡"}</button>
   <button class="sb" data-sh type="button">↗</button></div></div>`;
   el.onclick=e=>{if(e.target.closest("[data-lk],[data-sh]"))return;if(mode==="shorts")openReels(videos,i);else playAt(i)};
@@ -514,17 +544,22 @@ function render(append){
   }
 }
 async function search(term,append){
-  term=(term||"").trim();if(!term){status.textContent="Yozing";qi.focus();return}
+  term=(term||"").trim();
+  if(!term && mode!=="shorts"){status.textContent="Yozing";qi.focus();return}
+  // shorts: empty term → server picks random; do not show in input
+  if(mode==="shorts" && !term){ /* keep qi as-is or clear */ }
+  else if(term && mode!=="shorts"){ /* normal */ }
   sug.classList.remove("on");
   if(!append){
     $("btnS").disabled=true;$("btnS").textContent="...";
     status.textContent="Qidirilmoqda...";res.innerHTML=`<div class="empty">Yuklanmoqda...</div>`;
     videos=[];nextTok="";idx=-1;
   }
-  qCur=term;
+  const apiQ = term || (mode==="shorts" ? " " : term); // empty shorts → server random
+  qCur = term || (mode==="shorts" ? "__shorts__" : term);
   try{
     const type=mode==="shorts"?"shorts":"video";
-    let url="/api/search?q="+encodeURIComponent(term)+"&type="+type+"&max=24";
+    let url="/api/search?q="+encodeURIComponent(mode==="shorts"&&!term?"":term)+"&type="+type+"&max=24";
     if(append&&nextTok)url+="&pageToken="+encodeURIComponent(nextTok);
     const r=await fetch(url);const d=await r.json().catch(()=>({}));
     if(!r.ok)throw new Error(d.error||("Xato "+r.status));
@@ -532,7 +567,8 @@ async function search(term,append){
     videos=append?videos.concat(list):list;nextTok=d.nextPageToken||"";
     render(!!append);
     status.textContent=videos.length?"Tayyor":"Topilmadi";
-    if(!append){addRecent(term);pushHist(term)}qi.value=term;
+    if(!append && term){addRecent(term);pushHist(term)}
+    if(mode!=="shorts" || term){ if(term) qi.value=term; }
   }catch(e){
     if(!append){res.innerHTML=`<div class="empty">Xato</div>`;status.textContent=e.message;videos=[]}
     else toast(e.message);
@@ -544,24 +580,34 @@ form.onsubmit=e=>{e.preventDefault();mode="video";$("rTitle").textContent="Video
 /* Shorts reels — faqat ko'rinadigan iframe */
 function openReels(list,start){
   if(!list||!list.length){toast("Shorts yo‘q");return}
-  reelList=list.slice(0,20); // limit freeze
+  reelList=list.slice(0,20);
   reelI=Math.min(start||0,reelList.length-1);
   const feed=$("rfeed");feed.innerHTML="";
   if(reelObs){try{reelObs.disconnect()}catch{}}
   reelList.forEach((v,i)=>{
     const reel=document.createElement("div");reel.className="reel";reel.dataset.i=String(i);
+    const chAv=v.channelThumb||"";
     reel.innerHTML=`<div class="rbox" data-host></div>
       <div class="rui">
-        <button class="ract ${liked.has(v.id)?"on":""}" data-lk type="button">${liked.has(v.id)?"♥":"♡"}</button>
-        <button class="ract" data-sh type="button">↗</button>
+        <div style="text-align:center"><button class="ract ${liked.has(v.id)?"on":""}" data-lk type="button">${liked.has(v.id)?"♥":"♡"}</button><div class="ract-lab">${fmtN(v.likes)}</div></div>
+        <div style="text-align:center"><button class="ract" data-cmt type="button">💬</button><div class="ract-lab">${fmtN(v.comments)}</div></div>
+        <div style="text-align:center"><button class="ract" data-sh type="button">↗</button><div class="ract-lab">Ulash</div></div>
+        <div style="text-align:center"><button class="ract" data-rep type="button">↻</button><div class="ract-lab">${fmtN(v.views)}</div></div>
       </div>
-      <div class="rinfo"><div class="t">${esc(clean(v.title))}</div><div class="c">${esc(clean(v.channel))}</div></div>`;
-    reel.querySelector("[data-lk]").onclick=async e=>{const ok=await toggleLike(v);e.currentTarget.classList.toggle("on",ok);e.currentTarget.textContent=ok?"♥":"♡"};
+      <div class="rinfo">
+        <div class="chrow">${chAv?`<img class="chav" src="${esc(chAv)}" alt="">`:`<div class="chav" style="display:grid;place-items:center;font-size:14px">♪</div>`}<div class="chn">${esc(clean(v.channel))}</div></div>
+        <div class="t">${esc(clean(v.title))}</div>
+        <div class="stats"><span>▶ ${fmtN(v.views)}</span><span>♥ ${fmtN(v.likes)}</span><span>💬 ${fmtN(v.comments)}</span></div>
+      </div>`;
+    reel.querySelector("[data-lk]").onclick=async e=>{
+      const ok=await toggleLike(v);e.currentTarget.classList.toggle("on",ok);e.currentTarget.textContent=ok?"♥":"♡";
+    };
+    reel.querySelector("[data-cmt]").onclick=()=>toast("Izohlar: "+fmtN(v.comments));
     reel.querySelector("[data-sh]").onclick=()=>shareV(v);
+    reel.querySelector("[data-rep]").onclick=()=>toast("Ko‘rishlar: "+fmtN(v.views));
     feed.appendChild(reel);
   });
   $("reels").classList.add("on");document.body.style.overflow="hidden";
-  // IntersectionObserver — faqat active reelga iframe
   reelObs=new IntersectionObserver(entries=>{
     entries.forEach(en=>{
       const host=en.target.querySelector("[data-host]");
@@ -572,9 +618,7 @@ function openReels(list,start){
           const v=reelList[i];
           host.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&playsinline=1&rel=0&modestbranding=1" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen></iframe>`;
         }
-      }else if(host){
-        host.innerHTML=""; // unload to prevent freeze
-      }
+      }else if(host){host.innerHTML=""}
     });
   },{root:feed,threshold:[0.55]});
   feed.querySelectorAll(".reel").forEach(r=>reelObs.observe(r));
@@ -589,7 +633,7 @@ $("btnXR").onclick=closeReels;
 function act(a){
   closePanel();
   if(a==="home"){mode="video";$("rTitle").textContent="Videolar";search("Uzbek music 2025",false)}
-  else if(a==="shorts"){mode="shorts";$("rTitle").textContent="Shorts";search("shorts music",false).then(()=>{if(videos.length)openReels(videos,0)})}
+  else if(a==="shorts"){mode="shorts";$("rTitle").textContent="Shorts";qi.value="";status.textContent="Shorts yuklanmoqda...";search("",false).then(()=>{if(videos.length)openReels(videos,0);else toast("Shorts topilmadi")})}
   else if(a==="likes"){
     const p=profile();if(!p?.email){toast("Avval kiring");openAuth();return}
     fetch("/api/likes?email="+encodeURIComponent(p.email)).then(r=>r.json()).then(d=>{
