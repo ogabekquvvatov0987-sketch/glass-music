@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+"""
+Glass Music — simple YouTube search + static file server.
+Run:  YOUTUBE_API_KEY=your_key python3 server.py
+"""
 import json
 import os
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -10,6 +14,7 @@ HOST = "0.0.0.0"
 PORT = int(os.environ.get("PORT", "8080"))
 API_KEY = os.environ.get("YOUTUBE_API_KEY", "").strip()
 
+
 class GlassMusicHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -18,7 +23,10 @@ class GlassMusicHandler(SimpleHTTPRequestHandler):
             self.handle_search(parse_qs(parsed.query).get("q", [""])[0])
             return
 
-        # Serve this folder's index.html and static files.
+        # Default: serve index.html for root
+        if parsed.path in ("/", ""):
+            self.path = "/index.html"
+
         return super().do_GET()
 
     def handle_search(self, query):
@@ -40,7 +48,7 @@ class GlassMusicHandler(SimpleHTTPRequestHandler):
             + "&key=" + quote(API_KEY)
         )
 
-        request = Request(url, headers={"User-Agent": "GlassMusic/1.0"})
+        request = Request(url, headers={"User-Agent": "GlassMusic/1.1"})
         try:
             with urlopen(request, timeout=20) as response:
                 payload = json.loads(response.read().decode("utf-8"))
@@ -50,7 +58,7 @@ class GlassMusicHandler(SimpleHTTPRequestHandler):
                 message = details.get("error", {}).get("message", "YouTube API xatosi")
             except Exception:
                 message = "YouTube API HTTP xatosi: " + str(exc.code)
-            self.send_json(exc.code, {"error": message})
+            self.send_json(exc.code if 400 <= exc.code < 600 else 502, {"error": message})
             return
         except (URLError, TimeoutError) as exc:
             self.send_json(502, {"error": "YouTube API bilan bog‘lanib bo‘lmadi: " + str(exc)})
@@ -87,11 +95,15 @@ class GlassMusicHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(body)
 
+    def log_message(self, format, *args):
+        print("[%s] %s" % (self.log_date_time_string(), format % args))
+
+
 if __name__ == "__main__":
-    # Ensure SimpleHTTPRequestHandler serves files from this script's directory.
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     server = ThreadingHTTPServer((HOST, PORT), GlassMusicHandler)
     print(f"Glass Music ishlayapti: http://127.0.0.1:{PORT}")
