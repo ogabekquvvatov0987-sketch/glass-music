@@ -116,7 +116,7 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 .th{width:100%;height:100%;object-fit:cover}
 .cb{padding:9px 10px 11px}.vt{font-size:12px;font-weight:650;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .ch{font-size:11px;color:var(--m);margin-top:3px}
-.ca{display:flex;gap:6px;margin-top:8px}
+.ca{display:flex;flex-direction:row;flex-wrap:nowrap;gap:6px;margin-top:8px;align-items:center}
 .sb{flex:1;min-height:36px;padding:6px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid var(--line2);background:rgba(255,255,255,.06);color:var(--m)}
 .sb.liked{color:#f472b6;border-color:rgba(244,114,182,.35)}
 .empty{grid-column:1/-1;padding:28px 14px;text-align:center;color:var(--m);border:1px dashed var(--line);border-radius:16px;font-size:13px}
@@ -237,6 +237,18 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 .panel{transition:transform .32s cubic-bezier(.32,.72,0,1)}
 .sug{animation:fadeUp .2s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.siw{position:relative}
+.clr{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:28px;height:28px;border-radius:50%;border:0;
+  background:rgba(255,255,255,.15);color:var(--t);font-size:14px;
+  display:grid;place-items:center;z-index:5;padding:0;
+}
+.clr:active{background:rgba(255,255,255,.28)}
+.si{padding-right:40px !important}
+.ca{flex-direction:row !important;flex-wrap:nowrap}
+.sb{flex:1;min-width:0}
 </style>
 </head>
 <body>
@@ -247,7 +259,7 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
     <div class="av" id="avS">👤</div>
     <div class="pn" id="nmS">Mehmon</div>
     <div class="pe" id="emS">Hisob ulang</div>
-    <button class="btn pri" id="btnAuth" type="button" style="width:100%">Google orqali kirish</button>
+    <button class="btn pri" id="btnAuth" type="button" style="width:100%">Profil</button>
     <button class="btn" id="btnOut" type="button" style="width:100%;display:none">Chiqish</button>
   </div>
   <div>
@@ -279,7 +291,8 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
       <form class="sfm" id="form" autocomplete="off">
         <div class="siw">
           <svg class="sic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input class="si" id="q" type="search" placeholder="" enterkeyhint="search">
+          <input class="si" id="q" type="search" placeholder="" enterkeyhint="search" autocomplete="off">
+          <button type="button" class="clr" id="btnClear" aria-label="Tozalash" hidden>✕</button>
           <div class="sug" id="sug" role="listbox"></div>
         </div>
         <button class="btn pri" id="btnS" type="submit">Qidirish</button>
@@ -318,13 +331,19 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
   <div class="md">
     <div class="mh"><h3>Hisob</h3><button class="btn ic" id="btnXA" type="button">✕</button></div>
     <div class="mb">
-      <div id="gWrap">
-        <button class="btn pri" type="button" id="btnG" style="width:100%">Google orqali kirish</button>
-      </div>
       <form id="authF">
         <div class="fg"><label>Ism</label><input id="nm" maxlength="40" autocomplete="given-name"></div>
         <div class="fg"><label>Familiya</label><input id="sn" maxlength="40" autocomplete="family-name"></div>
         <div class="fg"><label>Gmail</label><input id="em" type="email" required autocomplete="email"></div>
+        <div class="fg"><label>Rasm</label>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="phPrev" style="width:52px;height:52px;border-radius:50%;border:2px solid var(--line);background:#15182a;overflow:hidden;display:grid;place-items:center;font-size:20px">📷</div>
+            <div>
+              <input type="file" id="photoIn" accept="image/*" hidden>
+              <button class="btn" type="button" id="btnPhoto">Rasm tanlash</button>
+            </div>
+          </div>
+        </div>
         <div class="mf">
           <button class="btn pri" type="submit" style="flex:1">Saqlash</button>
         </div>
@@ -434,27 +453,32 @@ function tryGoogle(){
     }
   });
 }
-$("btnG").onclick=tryGoogle;
 
+let photoData=null;
 function openAuth(){
   $("authM").classList.add("on");
   const p=profile();
   $("nm").value=p?.name||"";$("sn").value=p?.surname||"";$("em").value=p?.email||"";
-  // try auto google if configured
-  if(!GCI.includes("YOUR_GOOGLE") && window.google?.accounts?.id){
-    setTimeout(tryGoogle,200);
-  }
+  photoData=p?.photo||null;
+  const prev=$("phPrev");
+  if(prev)prev.innerHTML=photoData?`<img src="${photoData}" style="width:100%;height:100%;object-fit:cover">`:"📷";
 }
 function closeAuth(){$("authM").classList.remove("on")}
 $("btnAuth").onclick=openAuth;$("btnUser").onclick=openAuth;
 $("btnXA").onclick=closeAuth;
 $("authM").onclick=e=>{if(e.target===$("authM"))closeAuth()};
 $("btnOut").onclick=()=>{clearP();toast("Chiqildi")};
+$("btnPhoto")&&($("btnPhoto").onclick=()=>$("photoIn").click());
+$("photoIn")&&($("photoIn").onchange=e=>{
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  if(f.size>2*1024*1024){toast("Rasm 2MB dan kichik bo‘lsin");return}
+  const r=new FileReader();r.onload=()=>{photoData=r.result;$("phPrev").innerHTML=`<img src="${photoData}" style="width:100%;height:100%;object-fit:cover">`};r.readAsDataURL(f);
+});
 $("authF").onsubmit=e=>{
   e.preventDefault();
   const name=$("nm").value.trim(),surname=$("sn").value.trim(),email=$("em").value.trim();
   if(!email){toast("Email kerak");return}
-  saveP({name,surname,email,photo:null});closeAuth();toast("Saqlandi");
+  saveP({name,surname,email,photo:photoData||null});closeAuth();toast("Saqlandi");
 };
 
 function openPanel(){$("panel").classList.add("on");$("ov").classList.add("on")}
@@ -467,6 +491,11 @@ function loadYT(){
   const s=document.createElement("script");s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s);
   window.onYouTubeIframeAPIReady=()=>{ytOk=true};
 }
+function destroyPlayer(){
+  try{if(yt&&yt.destroy)yt.destroy()}catch{}
+  yt=null;
+  const box=$("player");if(box)box.innerHTML="";
+}
 function playAt(i){
   if(i<0||i>=videos.length)return;
   idx=i;const v=videos[i];
@@ -475,18 +504,29 @@ function playAt(i){
   try{pSec.scrollIntoView({behavior:"smooth",block:"nearest"})}catch{}
   document.querySelectorAll(".vc").forEach((c,j)=>c.classList.toggle("play",j===i));
   const id=v.id;
+  // always rebuild to avoid frozen state
+  destroyPlayer();
   if(ytOk && window.YT){
-    if(yt?.loadVideoById){try{yt.loadVideoById(id);return}catch{yt=null}}
-    $("player").innerHTML="";
-    yt=new YT.Player("player",{videoId:id,width:"100%",height:"100%",
-      playerVars:{autoplay:1,rel:0,playsinline:1,modestbranding:1},
-      events:{
-        onReady:e=>{try{e.target.playVideo()}catch{}$("ppT").textContent="⏸";ms(v)},
-        onStateChange:e=>{if(e.data===0)playNext();if(e.data===1)$("ppT").textContent="⏸";if(e.data===2)$("ppT").textContent="▶"},
-        onError:()=>{toast("Keyingisi...");setTimeout(playNext,500)}
-      }});
+    const holder=document.createElement("div");holder.id="player";
+    $("player")||null;
+    const pw=document.querySelector(".pw");
+    if(pw){pw.innerHTML="";const d=document.createElement("div");d.id="player";pw.appendChild(d)}
+    try{
+      yt=new YT.Player("player",{videoId:id,width:"100%",height:"100%",
+        playerVars:{autoplay:1,rel:0,playsinline:1,modestbranding:1,fs:0,iv_load_policy:3,cc_load_policy:0,origin:location.origin},
+        events:{
+          onReady:e=>{try{e.target.playVideo()}catch{}$("ppT").textContent="⏸";ms(v)},
+          onStateChange:e=>{if(e.data===0)playNext();if(e.data===1)$("ppT").textContent="⏸";if(e.data===2)$("ppT").textContent="▶"},
+          onError:()=>{toast("Keyingisi...");setTimeout(playNext,500)}
+        }});
+    }catch(err){
+      const pw2=document.querySelector(".pw");
+      if(pw2)pw2.innerHTML=`<div id="player" style="position:absolute;inset:0"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&playsinline=1&rel=0&modestbranding=1" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe></div>`;
+      ms(v);
+    }
   }else{
-    $("player").innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&playsinline=1&rel=0" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>`;
+    const pw=document.querySelector(".pw");
+    if(pw)pw.innerHTML=`<div id="player" style="position:absolute;inset:0"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?autoplay=1&playsinline=1&rel=0&modestbranding=1" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0"></iframe></div>`;
     ms(v);
   }
 }
@@ -501,7 +541,7 @@ function ms(v){
 function playNext(){if(idx+1<videos.length)playAt(idx+1);else if(nextTok)loadMore().then(()=>playAt(idx+1));else toast("Tugadi")}
 $("btnNext").onclick=playNext;$("btnPrev").onclick=()=>{if(idx>0)playAt(idx-1)};
 $("btnPP").onclick=()=>{try{const s=yt.getPlayerState();s===1?yt.pauseVideo():yt.playVideo()}catch{}};
-$("btnXP").onclick=()=>{try{yt?.stopVideo?.()}catch{}$("player").innerHTML="";yt=null;pSec.classList.remove("on");idx=-1};
+$("btnXP").onclick=()=>{destroyPlayer();pSec.classList.remove("on");idx=-1;document.querySelectorAll(".vc.play").forEach(c=>c.classList.remove("play"))};
 $("qual").onchange=e=>{try{yt?.setPlaybackQuality?.(e.target.value)}catch{}};
 
 function shareV(v){const u="https://www.youtube.com/watch?v="+v.id;if(navigator.share)navigator.share({title:v.title,url:u}).catch(()=>navCopy(u));else navCopy(u)}
@@ -535,7 +575,11 @@ function showSug(items){
     b.onclick=()=>{qi.value=b.dataset.t;sug.classList.remove("on");search(b.dataset.t,false)};
   });
 }
-qi.addEventListener("input",()=>{clearTimeout(sugT);const v=qi.value.trim();sugT=setTimeout(()=>fetchSug(v),140)});
+const btnClear=$("btnClear");
+function syncClr(){if(btnClear)btnClear.hidden=!qi.value}
+qi.addEventListener("input",()=>{syncClr();clearTimeout(sugT);const v=qi.value.trim();sugT=setTimeout(()=>fetchSug(v),140)});
+if(btnClear)btnClear.onclick=()=>{qi.value="";syncClr();sug.classList.remove("on");qi.focus()};
+
 qi.addEventListener("focus",()=>{if(qi.value.trim().length>=1)fetchSug(qi.value.trim())});
 document.addEventListener("click",e=>{if(!e.target.closest(".sw"))sug.classList.remove("on")});
 
@@ -595,8 +639,9 @@ async function search(term,append){
     videos=append?videos.concat(list):list;nextTok=d.nextPageToken||"";
     render(!!append);
     status.textContent=videos.length?"Tayyor":"Topilmadi";
-    if(!append && term){addRecent(term);pushHist(term)}
-    if(mode!=="shorts" || term){ if(term) qi.value=term; }
+    if(!append && term && term!=="Uzbek music 2025"){addRecent(term);pushHist(term)}
+    if(mode!=="shorts" && term && !search._silent){ qi.value=term; }
+    search._silent=false;
   }catch(e){
     if(!append){res.innerHTML=`<div class="empty">Xato</div>`;status.textContent=e.message;videos=[]}
     else toast(e.message);
@@ -644,7 +689,7 @@ function openReels(list,start){
         reelI=i;
         if(host && !host.querySelector("iframe")){
           const v=reelList[i];
-          host.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=0&fs=0&disablekb=1&iv_load_policy=3" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen style="pointer-events:none"></iframe>`;
+          host.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=0&fs=0&disablekb=1&iv_load_policy=3&cc_load_policy=0" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen style="pointer-events:none"></iframe>`;
         }
       }else if(host){host.innerHTML=""}
     });
@@ -677,7 +722,7 @@ $("btnXR").onclick=closeReels;
 
 function act(a){
   closePanel();
-  if(a==="home"){mode="video";$("rTitle").textContent="Videolar";search("Uzbek music 2025",false)}
+  if(a==="home"){mode="video";$("rTitle").textContent="Videolar";search._silent=true;qi.value="";search("Uzbek music 2025",false)}
   else if(a==="shorts"){mode="shorts";$("rTitle").textContent="Shorts";qi.value="";status.textContent="Shorts yuklanmoqda...";search("",false).then(()=>{if(videos.length)openReels(videos,0);else toast("Shorts topilmadi")})}
   else if(a==="likes"){
     const p=profile();if(!p?.email){toast("Avval kiring");openAuth();return}
@@ -698,7 +743,7 @@ window.addEventListener("scroll",()=>{
 
 $("btnXC")&&($("btnXC").onclick=closeComments);
 loadYT();renderP();
-search("Uzbek music 2025",false);
+mode="video";search._silent=true;search("Uzbek music 2025",false);
 </script>
 </body>
 </html>
