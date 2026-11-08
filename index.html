@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090b12">
+  <title>Glass Music</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080a11;
+      --panel: rgba(255,255,255,.075);
+      --line: rgba(255,255,255,.13);
+      --text: #f6f7fb;
+      --muted: #a9b0c2;
+      --accent: #9a8cff;
+      --accent2: #62d9ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 12% 0%, rgba(112,83,255,.27), transparent 36%),
+        radial-gradient(ellipse at 88% 18%, rgba(39,190,255,.16), transparent 34%),
+        linear-gradient(160deg, #080a11, #111426 55%, #080a11);
+    }
+    button, input { font: inherit; }
+    .shell { width: min(1100px, 100%); margin: auto; padding: 24px 18px 60px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:26px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:21px; font-weight:800; letter-spacing:.2px; }
+    .logo { width:42px; height:42px; border-radius:15px; display:grid; place-items:center;
+      background:linear-gradient(135deg, rgba(164,143,255,.95), rgba(66,201,255,.8));
+      box-shadow:0 8px 30px rgba(101,106,255,.28); color:#080a11; }
+    .top-note { color:var(--muted); font-size:13px; }
+    .hero { padding:28px; border:1px solid var(--line); border-radius:30px;
+      background:linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.035));
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      box-shadow:0 20px 70px rgba(0,0,0,.24); }
+    .eyebrow { color:var(--accent2); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:700; }
+    h1 { margin:10px 0 8px; font-size:clamp(30px,6vw,54px); letter-spacing:-1.8px; }
+    .subtitle { color:var(--muted); margin:0 0 22px; line-height:1.5; }
+    form { display:flex; gap:10px; width:100%; }
+    input { min-width:0; flex:1; border:1px solid var(--line); border-radius:17px; padding:15px 17px;
+      color:var(--text); background:rgba(4,6,12,.55); outline:none; }
+    input:focus { border-color:rgba(154,140,255,.75); box-shadow:0 0 0 3px rgba(154,140,255,.12); }
+    button { border:0; border-radius:17px; padding:0 22px; color:#0a0b13; font-weight:800;
+      background:linear-gradient(135deg,#b7aaff,#71e0ff); cursor:pointer; }
+    button:disabled { opacity:.55; cursor:wait; }
+    .status { min-height:22px; margin:14px 2px 0; color:var(--muted); font-size:14px; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:28px 2px 14px; }
+    h2 { margin:0; font-size:20px; }
+    .count { color:var(--muted); font-size:13px; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }
+    .video-card { overflow:hidden; border:1px solid var(--line); border-radius:22px; background:var(--panel);
+      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); cursor:pointer; transition:transform .18s,border-color .18s; }
+    .video-card:hover { transform:translateY(-3px); border-color:rgba(154,140,255,.5); }
+    .thumb { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; background:#171a28; }
+    .card-body { padding:13px 14px 15px; }
+    .video-title { font-size:14px; line-height:1.45; font-weight:700; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .channel { margin-top:8px; font-size:12px; color:var(--muted); }
+    .player-panel { margin-top:25px; padding:17px; border:1px solid var(--line); border-radius:26px; background:var(--panel); display:none; }
+    .player-panel.show { display:block; }
+    .playing-title { font-weight:750; margin:0 0 13px; }
+    .player-wrap { overflow:hidden; border-radius:18px; background:#000; aspect-ratio:16/9; }
+    iframe { display:block; width:100%; height:100%; border:0; }
+    .empty { grid-column:1/-1; padding:24px; text-align:center; color:var(--muted); border:1px dashed var(--line); border-radius:20px; }
+    footer { margin-top:35px; text-align:center; color:#81899b; font-size:12px; }
+    @media(max-width:760px) {
+      .shell { padding:16px 13px 40px; }
+      .hero { padding:22px 17px; border-radius:25px; }
+      .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+      .card-body { padding:10px; }
+      .video-title { font-size:13px; }
+      form { flex-direction:column; }
+      button { min-height:48px; }
+      .top-note { display:none; }
+    }
+    @media(max-width:420px) { .grid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand"><span class="logo">♫</span><span>Glass Music</span></div>
+      <div class="top-note">Liquid Glass • Music & video</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">Your music space</div>
+      <h1>Musiqani izla.</h1>
+      <p class="subtitle">Qo‘shiq yoki ijrochi nomini yozing. Natijalar shu sahifada chiqadi.</p>
+      <form id="searchForm">
+        <input id="query" type="search" placeholder="Masalan: Uzbek pop, Sevara..." autocomplete="off" required>
+        <button id="searchButton" type="submit">Qidirish</button>
+      </form>
+      <div class="status" id="status" role="status">Qidiruvni boshlash uchun nom yozing.</div>
+    </section>
+
+    <section id="playerSection" class="player-panel" aria-live="polite">
+      <p id="playingTitle" class="playing-title"></p>
+      <div class="player-wrap">
+        <iframe id="player" title="Glass Music video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <h2>Qidiruv natijalari</h2>
+      <span id="resultCount" class="count">0 ta video</span>
+    </div>
+    <section id="results" class="grid">
+      <div class="empty">Qidiruv natijalari shu yerda ko‘rinadi.</div>
+    </section>
+    <footer>Glass Music · YouTube videolari sahifa ichida ijro etiladi</footer>
+  </main>
+
+  <script>
+    "use strict";
+
+    const searchForm = document.getElementById("searchForm");
+    const queryInput = document.getElementById("query");
+    const searchButton = document.getElementById("searchButton");
+    const statusEl = document.getElementById("status");
+    const resultsEl = document.getElementById("results");
+    const resultCountEl = document.getElementById("resultCount");
+    const playerSection = document.getElementById("playerSection");
+    const player = document.getElementById("player");
+    const playingTitle = document.getElementById("playingTitle");
+
+    function setStatus(message) {
+      statusEl.textContent = message;
+    }
+
+    function showEmpty(message) {
+      resultsEl.replaceChildren();
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = message;
+      resultsEl.appendChild(empty);
+      resultCountEl.textContent = "0 ta video";
+    }
+
+    function playVideo(video) {
+      if (!video || !video.id) return;
+      playingTitle.textContent = video.title || "Video";
+      // Embed is placed inside this page; do not open YouTube search in another tab.
+      player.src = "https://www.youtube-nocookie.com/embed/" +
+        encodeURIComponent(video.id) + "?autoplay=1&rel=0";
+      playerSection.classList.add("show");
+      playerSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function createVideoCard(video) {
+      const card = document.createElement("article");
+      card.className = "video-card";
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-label", "Ijro etish: " + (video.title || "Video"));
+
+      const image = document.createElement("img");
+      image.className = "thumb";
+      image.loading = "lazy";
+      image.alt = "";
+      image.src = video.thumbnail || ("https://i.ytimg.com/vi/" +
+        encodeURIComponent(video.id) + "/hqdefault.jpg");
+
+      const body = document.createElement("div");
+      body.className = "card-body";
+      const title = document.createElement("div");
+      title.className = "video-title";
+      title.textContent = video.title || "Nomsiz video";
+
+      const channel = document.createElement("div");
+      channel.className = "channel";
+      channel.textContent = video.channel || "YouTube";
+
+      body.append(title, channel);
+      card.append(image, body);
+      card.addEventListener("click", () => playVideo(video));
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          playVideo(video);
+        }
+      });
+      return card;
+    }
+
+    async function searchMusic(searchTerm) {
+      const term = searchTerm.trim();
+      if (!term) {
+        setStatus("Iltimos, qidiruv uchun nom yozing.");
+        queryInput.focus();
+        return;
+      }
+
+      searchButton.disabled = true;
+      searchButton.textContent = "Qidirilmoqda...";
+      setStatus("YouTube’dan natijalar olinmoqda...");
+      showEmpty("Natijalar yuklanmoqda...");
+
+      try {
+        const response = await fetch("/api/search?q=" + encodeURIComponent(term));
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.error || "Server xatosi (" + response.status + ")");
+        }
+        if (!Array.isArray(data.videos)) {
+          throw new Error("Server javobi noto‘g‘ri formatda.");
+        }
+
+        resultsEl.replaceChildren();
+        if (data.videos.length === 0) {
+          showEmpty("Bu so‘rov bo‘yicha video topilmadi.");
+          setStatus("Natija topilmadi.");
+          return;
+        }
+
+        data.videos.forEach((video) => {
+          if (video && video.id) resultsEl.appendChild(createVideoCard(video));
+        });
+        resultCountEl.textContent = data.videos.length + " ta video";
+        setStatus("Tayyor. Videoni bosib shu sahifada ijro eting.");
+      } catch (error) {
+        showEmpty("Qidiruv amalga oshmadi.");
+        setStatus(error.message || "Xatolik yuz berdi. Server va API kalitini tekshiring.");
+      } finally {
+        searchButton.disabled = false;
+        searchButton.textContent = "Qidirish";
+      }
+    }
+
+    searchForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      searchMusic(queryInput.value);
+    });
+  </script>
+</body>
+</html>
