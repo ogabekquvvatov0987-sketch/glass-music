@@ -1,0 +1,4 @@
+[33mf68dd3b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Glass Music yangilandi
+ server.py        |  20 [32m++++++++++++++++[m[31m----[m
+ server.py.backup | 104 [32m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[m
+ 2 files changed, 120 insertions(+), 4 deletions(-)

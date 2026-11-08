@@ -3,28 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-  <meta name="theme-color" content="#090b12">
+  <meta name="theme-color" content="#07090f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Glass Music</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     :root {
       color-scheme: dark;
       --bg: #07090f;
-      --panel: rgba(255, 255, 255, 0.07);
-      --panel-strong: rgba(255, 255, 255, 0.11);
-      --line: rgba(255, 255, 255, 0.14);
-      --line-soft: rgba(255, 255, 255, 0.08);
-      --text: #f4f6fb;
+      --panel: rgba(255,255,255,.08);
+      --panel-strong: rgba(255,255,255,.13);
+      --line: rgba(255,255,255,.16);
+      --line-soft: rgba(255,255,255,.09);
+      --text: #f5f7fb;
       --muted: #9aa3b8;
       --accent: #a78bfa;
       --accent2: #38bdf8;
-      --accent-grad: linear-gradient(135deg, #c4b5fd 0%, #67e8f9 100%);
-      --glass-blur: 28px;
-      --radius: 22px;
-      --radius-lg: 28px;
-      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      --grad: linear-gradient(135deg, #c4b5fd 0%, #67e8f9 100%);
+      --glass: blur(28px) saturate(1.35);
+      --radius: 20px;
+      --shadow: 0 18px 48px rgba(0,0,0,.4);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
@@ -32,774 +31,434 @@
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       background:
-        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(139, 92, 246, 0.28), transparent 50%),
-        radial-gradient(ellipse 60% 40% at 90% 5%, rgba(14, 165, 233, 0.18), transparent 45%),
-        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(99, 102, 241, 0.12), transparent 40%),
-        linear-gradient(165deg, #07090f 0%, #0f1220 45%, #07090f 100%);
+        radial-gradient(ellipse 90% 55% at 8% -8%, rgba(139,92,246,.3), transparent 52%),
+        radial-gradient(ellipse 70% 45% at 92% 8%, rgba(14,165,233,.2), transparent 48%),
+        radial-gradient(ellipse 50% 35% at 50% 100%, rgba(99,102,241,.14), transparent 42%),
+        linear-gradient(165deg, #07090f, #0e1220 50%, #07090f);
       background-attachment: fixed;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
-
     button, input, select { font: inherit; color: inherit; }
     button { cursor: pointer; border: none; background: none; }
     img { display: block; max-width: 100%; }
 
-    .app {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      min-height: 100dvh;
-      max-width: 1440px;
-      margin: 0 auto;
-    }
-
-    /* SIDEBAR */
-    .sidebar {
-      position: sticky;
-      top: 0;
-      height: 100dvh;
-      padding: 20px 16px;
-      border-right: 1px solid var(--line-soft);
-      background: rgba(8, 10, 18, 0.55);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      z-index: 40;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      padding: 4px 6px;
-    }
-    .logo {
-      width: 42px; height: 42px;
-      border-radius: 14px;
-      display: grid; place-items: center;
-      background: var(--accent-grad);
-      box-shadow: 0 8px 28px rgba(139, 92, 246, 0.35);
-      color: #0a0b13;
-      font-size: 20px;
-    }
-
-    .profile-card {
-      padding: 16px;
-      border-radius: var(--radius);
+    .glass-btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 18px; border-radius: 14px; font-weight: 700; font-size: 13px;
       border: 1px solid var(--line);
-      background: var(--panel);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      text-align: center;
-    }
-    .avatar-wrap { position: relative; width: 72px; height: 72px; }
-    .avatar {
-      width: 72px; height: 72px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid rgba(167, 139, 250, 0.5);
-      background: linear-gradient(145deg, #1e1b4b, #0f172a);
-      display: grid; place-items: center;
-      font-size: 28px;
-      overflow: hidden;
-    }
-    .avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-placeholder { color: var(--accent); }
-    .profile-name { font-weight: 700; font-size: 15px; line-height: 1.3; }
-    .profile-email { font-size: 12px; color: var(--muted); word-break: break-all; }
-    .btn-auth {
-      width: 100%;
-      padding: 11px 16px;
-      border-radius: 14px;
-      font-weight: 700;
-      font-size: 13px;
-      background: var(--accent-grad);
-      color: #0a0b13;
-      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.25);
-      transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
-    }
-    .btn-auth:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(139, 92, 246, 0.35); }
-    .btn-auth:active { transform: scale(0.98); }
-    .btn-ghost {
-      width: 100%;
-      padding: 10px;
-      border-radius: 12px;
-      font-size: 13px;
-      color: var(--muted);
-      border: 1px solid var(--line-soft);
-      transition: background 0.15s, color 0.15s;
-    }
-    .btn-ghost:hover { background: var(--panel); color: var(--text); }
-
-    .nav-section { margin-top: 8px; }
-    .nav-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: var(--muted);
-      padding: 0 8px 8px;
-      font-weight: 600;
-    }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 12px;
-      border-radius: 14px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-      transition: background 0.15s, color 0.15s;
-      width: 100%;
-      text-align: left;
-    }
-    .nav-item:hover, .nav-item.active {
-      background: var(--panel-strong);
+      background: linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+      backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
+      box-shadow: 0 4px 16px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.18);
+      transition: transform .15s, box-shadow .2s, border-color .2s, background .2s;
       color: var(--text);
     }
-    .nav-item svg { flex-shrink: 0; opacity: 0.85; }
+    .glass-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(167,139,250,.45);
+      box-shadow: 0 10px 28px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.22);
+    }
+    .glass-btn:active { transform: scale(.97); }
+    .glass-btn.primary {
+      background: var(--grad); color: #0a0b13; border: none;
+      box-shadow: 0 6px 22px rgba(139,92,246,.32), inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    .glass-btn.primary:hover {
+      box-shadow: 0 12px 32px rgba(139,92,246,.42), inset 0 1px 0 rgba(255,255,255,.4);
+    }
+    .glass-btn.icon { width: 42px; height: 42px; padding: 0; border-radius: 13px; }
+    .glass-btn:disabled { opacity: .5; cursor: wait; transform: none; }
 
+    .app {
+      display: grid; grid-template-columns: 270px 1fr 56px;
+      min-height: 100dvh; max-width: 1500px; margin: 0 auto;
+    }
+
+    .sidebar {
+      position: sticky; top: 0; height: 100dvh; padding: 18px 14px;
+      border-right: 1px solid var(--line-soft);
+      background: rgba(8,10,18,.55);
+      backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
+      display: flex; flex-direction: column; gap: 16px; z-index: 40;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 11px;
+      font-size: 19px; font-weight: 800; letter-spacing: -.3px; padding: 4px 6px;
+    }
+    .logo {
+      width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center;
+      background: var(--grad); box-shadow: 0 8px 26px rgba(139,92,246,.35);
+      color: #0a0b13; font-size: 18px;
+    }
+    .profile-card {
+      padding: 14px; border-radius: var(--radius); border: 1px solid var(--line);
+      background: var(--panel); backdrop-filter: blur(22px);
+      display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+    }
+    .avatar {
+      width: 68px; height: 68px; border-radius: 50%;
+      border: 2px solid rgba(167,139,250,.55);
+      background: linear-gradient(145deg,#1e1b4b,#0f172a);
+      display: grid; place-items: center; font-size: 26px; overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { font-weight: 700; font-size: 14px; }
+    .profile-email { font-size: 11px; color: var(--muted); word-break: break-all; }
+    .nav-label {
+      font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+      color: var(--muted); padding: 0 8px 6px; font-weight: 600;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: 13px; font-size: 13px; font-weight: 500; color: var(--muted);
+      width: 100%; text-align: left; transition: background .15s, color .15s;
+    }
+    .nav-item:hover, .nav-item.active { background: var(--panel-strong); color: var(--text); }
     .sidebar-footer {
-      margin-top: auto;
-      padding-top: 12px;
-      border-top: 1px solid var(--line-soft);
-      font-size: 11px;
-      color: #6b7280;
-      text-align: center;
-      line-height: 1.5;
+      margin-top: auto; padding-top: 10px; border-top: 1px solid var(--line-soft);
+      font-size: 10px; color: #6b7280; text-align: center; line-height: 1.5;
     }
 
-    /* MAIN */
-    .main {
-      padding: 22px 28px 80px;
-      min-width: 0;
+    .right-rail {
+      position: sticky; top: 0; height: 100dvh; border-left: 1px solid var(--line-soft);
+      background: rgba(8,10,18,.45); backdrop-filter: blur(20px);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 16px 8px; gap: 12px; z-index: 40;
+    }
+    .rail-btn {
+      width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center;
+      border: 1px solid var(--line-soft); background: rgba(255,255,255,.06);
+      backdrop-filter: blur(16px); color: var(--text);
+      transition: background .15s, border-color .15s, transform .15s;
+    }
+    .rail-btn:hover {
+      background: var(--panel-strong); border-color: rgba(167,139,250,.4); transform: translateY(-1px);
+    }
+    .hamburger span {
+      display: block; width: 16px; height: 2px; background: currentColor; border-radius: 2px; margin: 3px 0;
     }
 
+    .main { padding: 20px 24px 90px; min-width: 0; }
     .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 22px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 18px;
     }
-    .topbar-title { font-size: 15px; color: var(--muted); font-weight: 500; }
-    .mobile-profile-btn {
-      display: none;
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      border: 1px solid var(--line);
-      background: var(--panel);
-      backdrop-filter: blur(16px);
-      overflow: hidden;
-      place-items: center;
-      font-size: 18px;
-    }
-    .mobile-profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+    .topbar-title { font-size: 14px; color: var(--muted); font-weight: 500; }
+    .mobile-btns { display: none; gap: 8px; }
 
-    /* HERO */
     .hero {
-      padding: 28px 30px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      box-shadow: var(--shadow);
-      margin-bottom: 28px;
-      position: relative;
-      overflow: hidden;
+      padding: 26px 28px; border: 1px solid var(--line); border-radius: 26px;
+      background: linear-gradient(145deg, rgba(255,255,255,.1), rgba(255,255,255,.03));
+      backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
+      box-shadow: var(--shadow); margin-bottom: 22px; position: relative; overflow: hidden;
     }
     .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 20% 20%, rgba(167,139,250,0.12), transparent 45%);
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle at 18% 20%, rgba(167,139,250,.14), transparent 45%);
       pointer-events: none;
     }
     .eyebrow {
-      color: var(--accent2);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      font-weight: 700;
-      margin-bottom: 8px;
+      color: var(--accent2); font-size: 11px; text-transform: uppercase;
+      letter-spacing: 2px; font-weight: 700; margin-bottom: 6px;
     }
     h1 {
-      font-size: clamp(28px, 5vw, 46px);
-      letter-spacing: -1.6px;
-      font-weight: 800;
-      line-height: 1.15;
-      margin-bottom: 8px;
+      font-size: clamp(26px, 4.5vw, 42px); letter-spacing: -1.4px;
+      font-weight: 800; line-height: 1.15; margin-bottom: 6px;
     }
     .subtitle {
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.5;
-      margin-bottom: 22px;
-      max-width: 520px;
+      color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 18px; max-width: 520px;
+    }
+    .mode-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .chip {
+      padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 650;
+      border: 1px solid var(--line-soft); background: rgba(255,255,255,.05);
+      backdrop-filter: blur(12px); color: var(--muted); transition: all .15s;
+    }
+    .chip:hover, .chip.active {
+      color: var(--text); border-color: rgba(167,139,250,.5); background: rgba(167,139,250,.15);
     }
 
-    .search-wrap { position: relative; z-index: 20; }
+    .search-wrap { position: relative; z-index: 25; }
     .search-form { display: flex; gap: 10px; width: 100%; }
     .search-input-wrap { flex: 1; position: relative; min-width: 0; }
     .search-input {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 15px 18px 15px 46px;
-      color: var(--text);
-      background: rgba(4, 6, 14, 0.6);
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%; border: 1px solid var(--line); border-radius: 16px;
+      padding: 14px 16px 14px 44px; color: var(--text); background: rgba(4,6,14,.58);
+      outline: none; transition: border-color .2s, box-shadow .2s;
     }
     .search-input:focus {
-      border-color: rgba(167, 139, 250, 0.7);
-      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+      border-color: rgba(167,139,250,.7); box-shadow: 0 0 0 3px rgba(167,139,250,.14);
     }
     .search-icon {
-      position: absolute;
-      left: 16px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      pointer-events: none;
+      position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
     }
-    .btn-search {
-      border-radius: 16px;
-      padding: 0 26px;
-      font-weight: 800;
-      font-size: 14px;
-      color: #0a0b13;
-      background: var(--accent-grad);
-      box-shadow: 0 6px 22px rgba(139, 92, 246, 0.28);
-      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-      white-space: nowrap;
-    }
-    .btn-search:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(139, 92, 246, 0.38); }
-    .btn-search:disabled { opacity: 0.55; cursor: wait; transform: none; }
-
     .suggestions {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0; right: 0;
-      background: rgba(12, 14, 24, 0.92);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-      max-height: 280px;
-      overflow-y: auto;
-      display: none;
-      z-index: 50;
+      position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+      background: rgba(12,14,24,.94); border: 1px solid var(--line); border-radius: 16px;
+      backdrop-filter: blur(24px); box-shadow: 0 16px 40px rgba(0,0,0,.45);
+      max-height: 280px; overflow-y: auto; display: none; z-index: 50;
     }
     .suggestions.show { display: block; }
     .suggestion-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      width: 100%;
-      text-align: left;
-      font-size: 14px;
-      color: var(--text);
-      transition: background 0.12s;
-      border-bottom: 1px solid var(--line-soft);
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      width: 100%; text-align: left; font-size: 14px; border-bottom: 1px solid var(--line-soft);
+      transition: background .12s;
     }
     .suggestion-item:last-child { border-bottom: none; }
-    .suggestion-item:hover, .suggestion-item.active {
-      background: rgba(167, 139, 250, 0.12);
-    }
-    .suggestion-item svg { flex-shrink: 0; color: var(--muted); }
+    .suggestion-item:hover, .suggestion-item.active { background: rgba(167,139,250,.12); }
+    .status { min-height: 20px; margin-top: 12px; color: var(--muted); font-size: 13px; }
 
-    .status {
-      min-height: 22px;
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* PLAYER */
     .player-section {
-      display: none;
-      margin-bottom: 28px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: var(--panel);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      overflow: hidden;
-      box-shadow: var(--shadow);
+      display: none; margin-bottom: 22px; border: 1px solid var(--line); border-radius: 24px;
+      background: var(--panel); backdrop-filter: blur(22px); overflow: hidden; box-shadow: var(--shadow);
     }
     .player-section.show { display: block; }
     .player-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--line-soft);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line-soft);
     }
     .playing-title {
-      font-weight: 700;
-      font-size: 15px;
-      line-height: 1.35;
-      flex: 1;
-      min-width: 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-weight: 700; font-size: 14px; line-height: 1.35; flex: 1; min-width: 0;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
-    .player-actions { display: flex; gap: 8px; flex-shrink: 0; }
-    .icon-btn {
-      width: 38px; height: 38px;
-      border-radius: 12px;
-      display: grid; place-items: center;
-      border: 1px solid var(--line-soft);
-      background: rgba(255,255,255,0.04);
-      color: var(--text);
-      transition: background 0.15s, border-color 0.15s;
-    }
-    .icon-btn:hover { background: var(--panel-strong); border-color: var(--line); }
-    .player-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-    }
-    #player {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
+    .player-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
+    #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
     .player-controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 16px;
-      border-top: 1px solid var(--line-soft);
-      flex-wrap: wrap;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 12px 14px; border-top: 1px solid var(--line-soft); flex-wrap: wrap;
     }
-    .ctrl-group { display: flex; align-items: center; gap: 8px; }
-    .ctrl-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 600;
-      border: 1px solid var(--line-soft);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      transition: background 0.15s, transform 0.12s;
-    }
-    .ctrl-btn:hover { background: var(--panel-strong); }
-    .ctrl-btn:active { transform: scale(0.97); }
-    .ctrl-btn.primary {
-      background: var(--accent-grad);
-      color: #0a0b13;
-      border: none;
-    }
+    .ctrl-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .quality-select {
-      padding: 8px 12px;
-      border-radius: 12px;
-      border: 1px solid var(--line-soft);
-      background: rgba(4, 6, 14, 0.7);
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
+      padding: 8px 12px; border-radius: 12px; border: 1px solid var(--line-soft);
+      background: rgba(4,6,14,.7); color: var(--text); font-size: 12px; outline: none;
     }
-    .quality-select:focus { border-color: rgba(167,139,250,0.6); }
 
-    /* RESULTS */
     .section-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 14px; flex-wrap: wrap;
     }
-    .section-head h2 { font-size: 18px; font-weight: 700; }
+    .section-head h2 { font-size: 17px; font-weight: 700; }
     .count { color: var(--muted); font-size: 13px; }
 
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 16px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
     }
     .video-card {
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--panel);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-      outline: none;
+      overflow: hidden; border: 1px solid var(--line); border-radius: 16px;
+      background: var(--panel); backdrop-filter: blur(16px); cursor: pointer;
+      transition: transform .2s, border-color .2s, box-shadow .2s; outline: none; position: relative;
     }
     .video-card:hover, .video-card:focus-visible {
-      transform: translateY(-4px);
-      border-color: rgba(167, 139, 250, 0.45);
-      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+      transform: translateY(-3px); border-color: rgba(167,139,250,.5);
+      box-shadow: 0 12px 30px rgba(0,0,0,.32);
     }
     .video-card.playing {
-      border-color: rgba(167, 139, 250, 0.7);
-      box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.25);
+      border-color: rgba(167,139,250,.75); box-shadow: 0 0 0 2px rgba(167,139,250,.28);
     }
     .thumb-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #12151f;
-      overflow: hidden;
+      position: relative; width: 100%; aspect-ratio: 16/9; background: #12151f; overflow: hidden;
     }
-    .thumb {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s;
-    }
+    .thumb { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
     .video-card:hover .thumb { transform: scale(1.04); }
     .play-overlay {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      background: rgba(0,0,0,0.25);
-      opacity: 0;
-      transition: opacity 0.2s;
+      position: absolute; inset: 0; display: grid; place-items: center;
+      background: rgba(0,0,0,.28); opacity: 0; transition: opacity .2s;
     }
     .video-card:hover .play-overlay { opacity: 1; }
     .play-icon {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      background: var(--accent-grad);
-      display: grid; place-items: center;
-      color: #0a0b13;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+      width: 44px; height: 44px; border-radius: 50%; background: var(--grad);
+      display: grid; place-items: center; color: #0a0b13; box-shadow: 0 6px 18px rgba(0,0,0,.35);
     }
-    .card-body { padding: 12px 14px 14px; }
+    .card-body { padding: 11px 12px 12px; }
     .video-title {
-      font-size: 14px;
-      line-height: 1.4;
-      font-weight: 650;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-size: 13px; line-height: 1.4; font-weight: 650;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
-    .channel {
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted);
+    .channel { margin-top: 5px; font-size: 11px; color: var(--muted); }
+    .card-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .share-btn {
+      flex: 1; padding: 7px 10px; border-radius: 10px; font-size: 11px; font-weight: 600;
+      border: 1px solid var(--line-soft); background: rgba(255,255,255,.05); color: var(--muted);
+      transition: background .15s, color .15s;
     }
+    .share-btn:hover { background: var(--panel-strong); color: var(--text); }
 
     .empty {
-      grid-column: 1 / -1;
-      padding: 40px 24px;
-      text-align: center;
-      color: var(--muted);
-      border: 1px dashed var(--line);
-      border-radius: 20px;
-      font-size: 14px;
+      grid-column: 1/-1; padding: 36px 20px; text-align: center; color: var(--muted);
+      border: 1px dashed var(--line); border-radius: 18px; font-size: 14px;
+    }
+    .load-more-wrap {
+      grid-column: 1/-1; display: flex; justify-content: center; padding: 12px 0 4px;
     }
 
-    /* MODAL */
+    .panel-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 90; display: none;
+    }
+    .panel-overlay.show { display: block; }
+    .side-panel {
+      position: fixed; top: 0; right: 0; width: min(320px, 88vw); height: 100%;
+      background: rgba(10,12,22,.96); backdrop-filter: blur(28px);
+      border-left: 1px solid var(--line); z-index: 95; padding: 18px 16px;
+      display: flex; flex-direction: column; gap: 14px;
+      transform: translateX(105%); transition: transform .28s cubic-bezier(.32,.72,0,1);
+    }
+    .side-panel.show { transform: translateX(0); }
+    .side-panel h3 { font-size: 15px; font-weight: 700; }
+    .panel-list { display: flex; flex-direction: column; gap: 6px; }
+    .panel-item {
+      display: flex; align-items: center; gap: 10px; padding: 12px;
+      border-radius: 13px; font-size: 13px; font-weight: 500; color: var(--muted);
+      text-align: left; width: 100%; transition: background .15s, color .15s;
+    }
+    .panel-item:hover, .panel-item.active { background: var(--panel-strong); color: var(--text); }
+
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(8px);
+      z-index: 100; display: none; align-items: center; justify-content: center; padding: 18px;
     }
     .modal-overlay.show { display: flex; }
     .modal {
-      width: min(420px, 100%);
-      border-radius: 24px;
-      border: 1px solid var(--line);
-      background: rgba(14, 16, 28, 0.95);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-      overflow: hidden;
+      width: min(420px, 100%); border-radius: 22px; border: 1px solid var(--line);
+      background: rgba(14,16,28,.95); backdrop-filter: blur(30px);
+      box-shadow: 0 28px 70px rgba(0,0,0,.5); overflow: hidden;
     }
     .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line-soft);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px; border-bottom: 1px solid var(--line-soft);
     }
-    .modal-header h3 { font-size: 17px; font-weight: 700; }
-    .modal-close {
-      width: 34px; height: 34px;
-      border-radius: 10px;
-      display: grid; place-items: center;
-      color: var(--muted);
-      transition: background 0.15s, color 0.15s;
-    }
-    .modal-close:hover { background: var(--panel); color: var(--text); }
-    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-group label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .modal-header h3 { font-size: 16px; font-weight: 700; }
+    .modal-body { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 11px; font-weight: 600; color: var(--muted); }
     .form-group input {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px 14px;
-      background: rgba(4, 6, 14, 0.55);
-      outline: none;
-      transition: border-color 0.2s;
+      border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px;
+      background: rgba(4,6,14,.55); outline: none;
     }
-    .form-group input:focus { border-color: rgba(167, 139, 250, 0.65); }
-    .photo-upload { display: flex; align-items: center; gap: 14px; }
+    .form-group input:focus { border-color: rgba(167,139,250,.65); }
+    .photo-upload { display: flex; align-items: center; gap: 12px; }
     .photo-preview {
-      width: 64px; height: 64px;
-      border-radius: 50%;
-      border: 2px solid var(--line);
-      background: #12151f;
-      overflow: hidden;
-      display: grid; place-items: center;
-      font-size: 24px;
-      flex-shrink: 0;
+      width: 58px; height: 58px; border-radius: 50%; border: 2px solid var(--line);
+      background: #12151f; overflow: hidden; display: grid; place-items: center; font-size: 22px;
     }
     .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
-    .photo-btn {
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      font-size: 13px;
-      font-weight: 600;
-      background: var(--panel);
-      transition: background 0.15s;
-    }
-    .photo-btn:hover { background: var(--panel-strong); }
-    .modal-footer {
-      padding: 0 20px 20px;
-      display: flex;
-      gap: 10px;
-    }
-    .btn-primary {
-      flex: 1;
-      padding: 13px;
-      border-radius: 14px;
-      font-weight: 800;
-      font-size: 14px;
-      background: var(--accent-grad);
-      color: #0a0b13;
-      transition: transform 0.15s, opacity 0.15s;
-    }
-    .btn-primary:hover { transform: translateY(-1px); }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .btn-secondary {
-      padding: 13px 18px;
-      border-radius: 14px;
-      font-weight: 600;
-      font-size: 14px;
-      border: 1px solid var(--line);
-      color: var(--muted);
-      transition: background 0.15s;
-    }
-    .btn-secondary:hover { background: var(--panel); color: var(--text); }
+    .modal-footer { padding: 0 18px 18px; display: flex; gap: 8px; }
+    .google-btn-wrap { display: flex; justify-content: center; padding: 4px 0 8px; min-height: 44px; }
 
     .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: rgba(20, 22, 36, 0.95);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px 20px;
-      font-size: 13px;
-      font-weight: 500;
-      backdrop-filter: blur(16px);
-      z-index: 200;
-      opacity: 0;
-      transition: transform 0.3s, opacity 0.3s;
-      pointer-events: none;
-      max-width: 90vw;
-      text-align: center;
+      position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: rgba(20,22,36,.95); border: 1px solid var(--line); border-radius: 14px;
+      padding: 11px 18px; font-size: 13px; font-weight: 500; backdrop-filter: blur(16px);
+      z-index: 200; opacity: 0; transition: transform .3s, opacity .3s; pointer-events: none;
+      max-width: 90vw; text-align: center;
     }
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
     .drawer-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 90;
-      display: none;
+      position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 88; display: none;
     }
     .drawer-overlay.show { display: block; }
     .mobile-drawer {
-      position: fixed;
-      top: 0; left: 0;
-      width: min(300px, 85vw);
-      height: 100%;
-      background: rgba(10, 12, 22, 0.96);
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
-      border-right: 1px solid var(--line);
-      z-index: 95;
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      transform: translateX(-105%);
-      transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+      position: fixed; top: 0; left: 0; width: min(300px, 85vw); height: 100%;
+      background: rgba(10,12,22,.96); backdrop-filter: blur(28px);
+      border-right: 1px solid var(--line); z-index: 92; padding: 18px 14px;
+      display: flex; flex-direction: column; gap: 14px;
+      transform: translateX(-105%); transition: transform .28s cubic-bezier(.32,.72,0,1);
     }
     .mobile-drawer.show { transform: translateX(0); }
 
-    @media (max-width: 900px) {
+    @media (max-width: 980px) {
       .app { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
-      .main { padding: 16px 14px 100px; }
-      .mobile-profile-btn { display: grid; }
-      .hero { padding: 22px 18px; border-radius: 22px; }
+      .sidebar, .right-rail { display: none; }
+      .main { padding: 14px 12px 100px; }
+      .mobile-btns { display: flex; }
+      .hero { padding: 20px 16px; border-radius: 20px; }
       .search-form { flex-direction: column; }
-      .btn-search { min-height: 48px; border-radius: 14px; }
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
       .player-controls { flex-direction: column; align-items: stretch; }
-      .ctrl-group { justify-content: center; flex-wrap: wrap; }
+      .ctrl-group { justify-content: center; }
       .hero, .player-section, .video-card, .modal {
-        backdrop-filter: blur(32px);
-        -webkit-backdrop-filter: blur(32px);
+        backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px);
       }
-      .video-card { border-radius: 16px; }
-      .card-body { padding: 10px 11px 12px; }
-      .video-title { font-size: 13px; }
     }
     @media (max-width: 480px) {
       .grid { grid-template-columns: 1fr; }
-      h1 { font-size: 26px; }
-    }
-    @media (min-width: 901px) {
-      .hero, .player-section, .video-card {
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-      }
+      h1 { font-size: 24px; }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <span class="logo">♫</span>
-        <span>Glass Music</span>
-      </div>
-
-      <div class="profile-card" id="profileCard">
-        <div class="avatar-wrap">
-          <div class="avatar" id="sidebarAvatar">
-            <span class="avatar-placeholder">👤</span>
-          </div>
-        </div>
+    <aside class="sidebar">
+      <div class="brand"><span class="logo">♫</span><span>Glass Music</span></div>
+      <div class="profile-card">
+        <div class="avatar" id="sidebarAvatar"><span>👤</span></div>
         <div>
           <div class="profile-name" id="sidebarName">Mehmon</div>
-          <div class="profile-email" id="sidebarEmail">Ro‘yxatdan o‘ting</div>
+          <div class="profile-email" id="sidebarEmail">Hisob ulang</div>
         </div>
-        <button class="btn-auth" id="authBtn" type="button">Ro‘yxatdan o‘tish</button>
-        <button class="btn-ghost" id="logoutBtn" type="button" style="display:none">Chiqish</button>
+        <button class="glass-btn primary" id="authBtn" type="button" style="width:100%">Ro‘yxat / Google</button>
+        <button class="glass-btn" id="logoutBtn" type="button" style="width:100%;display:none">Chiqish</button>
       </div>
-
-      <div class="nav-section">
+      <div>
         <div class="nav-label">Menyu</div>
-        <button class="nav-item active" type="button" data-action="home">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
-          Bosh sahifa
-        </button>
-        <button class="nav-item" type="button" data-action="trending">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          Trendlar
-        </button>
-        <button class="nav-item" type="button" data-action="recent">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          So‘nggi qidiruvlar
-        </button>
+        <button class="nav-item active" type="button" data-action="home">🏠 Bosh sahifa</button>
+        <button class="nav-item" type="button" data-action="trending">🔥 Trendlar</button>
+        <button class="nav-item" type="button" data-action="shorts">▶ Shorts</button>
+        <button class="nav-item" type="button" data-action="recent">⏱ So‘nggi</button>
       </div>
-
-      <div class="sidebar-footer">
-        Glass Music · Liquid Glass<br>
-        YouTube videolari sahifa ichida
-      </div>
+      <div class="sidebar-footer">Glass Music · Liquid Glass<br>YouTube · Shorts · Share</div>
     </aside>
 
     <main class="main">
       <div class="topbar">
-        <div class="topbar-title">Musiqa va video</div>
-        <button class="mobile-profile-btn" id="mobileProfileBtn" type="button" aria-label="Profil">
-          <span id="mobileAvatarIcon">👤</span>
-        </button>
+        <div class="topbar-title" id="topTitle">Musiqa va video</div>
+        <div class="mobile-btns">
+          <button class="glass-btn icon" id="mobileMenuBtn" type="button" aria-label="Menyu">☰</button>
+          <button class="glass-btn icon" id="mobilePanelBtn" type="button" aria-label="Panel">
+            <span class="hamburger"><span></span><span></span><span></span></span>
+          </button>
+        </div>
       </div>
 
       <section class="hero">
-        <div class="eyebrow">Your music space</div>
+        <div class="eyebrow">Liquid Glass · Music</div>
         <h1>Musiqani izla.</h1>
-        <p class="subtitle">Qo‘shiq yoki ijrochi nomini yozing. Takliflar pastda chiqadi, natijalar shu sahifada ochiladi.</p>
-
+        <p class="subtitle">Qo‘shiq, ijrochi yoki Shorts. Takliflar pastda, natijalar cheksiz yuklanadi.</p>
+        <div class="mode-chips">
+          <button class="chip active" type="button" data-mode="video">Videolar</button>
+          <button class="chip" type="button" data-mode="shorts">Shorts</button>
+          <button class="chip" type="button" data-mode="uzbek">O‘zbek musiqa</button>
+          <button class="chip" type="button" data-mode="pop">Pop</button>
+        </div>
         <div class="search-wrap">
           <form class="search-form" id="searchForm" autocomplete="off">
             <div class="search-input-wrap">
-              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <svg class="search-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
               <input class="search-input" id="query" type="search" placeholder="Masalan: Mirjalol Nematov, Sevara..." required>
               <div class="suggestions" id="suggestions" role="listbox"></div>
             </div>
-            <button class="btn-search" id="searchButton" type="submit">Qidirish</button>
+            <button class="glass-btn primary" id="searchButton" type="submit">Qidirish</button>
           </form>
         </div>
-        <div class="status" id="status" role="status">Qidiruvni boshlash uchun nom yozing.</div>
+        <div class="status" id="status">Yuklanmoqda...</div>
       </section>
 
-      <section id="playerSection" class="player-section" aria-live="polite">
+      <section id="playerSection" class="player-section">
         <div class="player-header">
           <p id="playingTitle" class="playing-title"></p>
-          <div class="player-actions">
-            <button class="icon-btn" id="closePlayerBtn" type="button" title="Yopish" aria-label="Yopish">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-            </button>
-          </div>
+          <button class="glass-btn icon" id="closePlayerBtn" type="button" title="Yopish">✕</button>
         </div>
-        <div class="player-wrap">
-          <div id="player"></div>
-        </div>
+        <div class="player-wrap"><div id="player"></div></div>
         <div class="player-controls">
           <div class="ctrl-group">
-            <button class="ctrl-btn" id="prevBtn" type="button" title="Oldingi">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-              Oldingi
-            </button>
-            <button class="ctrl-btn primary" id="playPauseBtn" type="button">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="playPauseIcon"><path d="M8 5v14l11-7z"/></svg>
-              <span id="playPauseText">Ijro</span>
-            </button>
-            <button class="ctrl-btn" id="nextBtn" type="button" title="Keyingi">
-              Keyingi
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 18h2V6h-2zm-11-6l8.5-6v12z"/></svg>
-            </button>
+            <button class="glass-btn" id="prevBtn" type="button">⏮ Oldingi</button>
+            <button class="glass-btn primary" id="playPauseBtn" type="button"><span id="playPauseText">▶ Ijro</span></button>
+            <button class="glass-btn" id="nextBtn" type="button">Keyingi ⏭</button>
           </div>
           <div class="ctrl-group">
-            <label for="qualitySelect" style="font-size:12px;color:var(--muted)">Sifat:</label>
-            <select class="quality-select" id="qualitySelect" title="Video sifati">
+            <label for="qualitySelect" style="font-size:11px;color:var(--muted)">Sifat</label>
+            <select class="quality-select" id="qualitySelect">
               <option value="default">Avto</option>
               <option value="hd1080">1080p</option>
               <option value="hd720">720p</option>
@@ -812,82 +471,97 @@
       </section>
 
       <div class="section-head">
-        <h2>Qidiruv natijalari</h2>
-        <span id="resultCount" class="count">0 ta video</span>
+        <h2 id="resultsTitle">Videolar</h2>
+        <span id="resultCount" class="count">0 ta</span>
       </div>
-      <section id="results" class="grid">
-        <div class="empty">Qidiruv natijalari shu yerda ko‘rinadi.</div>
-      </section>
+      <section id="results" class="grid"><div class="empty">Yuklanmoqda...</div></section>
     </main>
+
+    <aside class="right-rail">
+      <button class="rail-btn" id="railMenuBtn" type="button" title="Menyu" aria-label="Menyu">
+        <span class="hamburger"><span></span><span></span><span></span></span>
+      </button>
+      <button class="rail-btn" id="railShortsBtn" type="button" title="Shorts">▶</button>
+      <button class="rail-btn" id="railShareBtn" type="button" title="Ulashish">↗</button>
+      <button class="rail-btn" id="railHomeBtn" type="button" title="Bosh">⌂</button>
+    </aside>
   </div>
+
+  <div class="panel-overlay" id="panelOverlay"></div>
+  <aside class="side-panel" id="sidePanel">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3>Panel</h3>
+      <button class="glass-btn icon" id="closePanelBtn" type="button">✕</button>
+    </div>
+    <div class="panel-list">
+      <button class="panel-item" type="button" data-action="home">🏠 Bosh sahifa</button>
+      <button class="panel-item" type="button" data-action="trending">🔥 Trendlar</button>
+      <button class="panel-item" type="button" data-action="shorts">▶ Shorts videolar</button>
+      <button class="panel-item" type="button" data-action="recent">⏱ So‘nggi qidiruvlar</button>
+      <button class="panel-item" type="button" data-action="auth">👤 Hisob / Google</button>
+      <button class="panel-item" type="button" data-action="sharepage">↗ Sahifani ulashish</button>
+    </div>
+    <div style="margin-top:auto;font-size:11px;color:var(--muted);text-align:center">Cheksiz natija · Load more · Share</div>
+  </aside>
 
   <div class="drawer-overlay" id="drawerOverlay"></div>
   <aside class="mobile-drawer" id="mobileDrawer">
-    <div class="brand">
-      <span class="logo">♫</span>
-      <span>Glass Music</span>
-    </div>
+    <div class="brand"><span class="logo">♫</span><span>Glass Music</span></div>
     <div class="profile-card">
-      <div class="avatar-wrap">
-        <div class="avatar" id="drawerAvatar">
-          <span class="avatar-placeholder">👤</span>
-        </div>
-      </div>
+      <div class="avatar" id="drawerAvatar"><span>👤</span></div>
       <div>
         <div class="profile-name" id="drawerName">Mehmon</div>
-        <div class="profile-email" id="drawerEmail">Ro‘yxatdan o‘ting</div>
+        <div class="profile-email" id="drawerEmail">Hisob ulang</div>
       </div>
-      <button class="btn-auth" id="drawerAuthBtn" type="button">Ro‘yxatdan o‘tish</button>
-      <button class="btn-ghost" id="drawerLogoutBtn" type="button" style="display:none">Chiqish</button>
+      <button class="glass-btn primary" id="drawerAuthBtn" type="button" style="width:100%">Ro‘yxat / Google</button>
+      <button class="glass-btn" id="drawerLogoutBtn" type="button" style="width:100%;display:none">Chiqish</button>
     </div>
-    <div class="nav-section">
-      <div class="nav-label">Menyu</div>
-      <button class="nav-item active" type="button" data-action="home">Bosh sahifa</button>
-      <button class="nav-item" type="button" data-action="trending">Trendlar</button>
-      <button class="nav-item" type="button" data-action="recent">So‘nggi qidiruvlar</button>
-    </div>
+    <button class="nav-item" type="button" data-action="home">🏠 Bosh sahifa</button>
+    <button class="nav-item" type="button" data-action="trending">🔥 Trendlar</button>
+    <button class="nav-item" type="button" data-action="shorts">▶ Shorts</button>
+    <button class="nav-item" type="button" data-action="recent">⏱ So‘nggi</button>
   </aside>
 
   <div class="modal-overlay" id="authModal">
-    <div class="modal" role="dialog" aria-labelledby="authTitle">
+    <div class="modal">
       <div class="modal-header">
-        <h3 id="authTitle">Ro‘yxatdan o‘tish</h3>
-        <button class="modal-close" id="closeAuthModal" type="button" aria-label="Yopish">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
+        <h3>Hisob</h3>
+        <button class="glass-btn icon" id="closeAuthModal" type="button">✕</button>
       </div>
-      <form id="authForm">
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="regName">Ism</label>
-            <input id="regName" type="text" placeholder="Ismingiz" required maxlength="40">
-          </div>
-          <div class="form-group">
-            <label for="regSurname">Familiya</label>
-            <input id="regSurname" type="text" placeholder="Familiyangiz" required maxlength="40">
-          </div>
-          <div class="form-group">
-            <label for="regEmail">Gmail</label>
-            <input id="regEmail" type="email" placeholder="email@gmail.com" required>
-          </div>
-          <div class="form-group">
-            <label>Surat</label>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--muted);margin-bottom:4px">Google hisob bilan avtomatik ulaning yoki qo‘lda to‘ldiring.</p>
+        <div class="google-btn-wrap" id="googleBtnWrap">
+          <div id="g_id_onload"
+            data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+            data-context="signin" data-ux_mode="popup"
+            data-callback="handleGoogleCredential" data-auto_select="true" data-itp_support="true"></div>
+          <div class="g_id_signin" data-type="standard" data-shape="rectangular"
+            data-theme="filled_black" data-text="signin_with" data-size="large"
+            data-logo_alignment="left" data-width="320"></div>
+        </div>
+        <div style="text-align:center;font-size:11px;color:var(--muted);margin:4px 0">— yoki —</div>
+        <form id="authForm">
+          <div class="form-group"><label for="regName">Ism</label>
+            <input id="regName" type="text" placeholder="Ismingiz" maxlength="40"></div>
+          <div class="form-group"><label for="regSurname">Familiya</label>
+            <input id="regSurname" type="text" placeholder="Familiyangiz" maxlength="40"></div>
+          <div class="form-group"><label for="regEmail">Email / Gmail</label>
+            <input id="regEmail" type="email" placeholder="email@gmail.com"></div>
+          <div class="form-group"><label>Surat</label>
             <div class="photo-upload">
-              <div class="photo-preview" id="photoPreview">
-                <span>📷</span>
-              </div>
+              <div class="photo-preview" id="photoPreview"><span>📷</span></div>
               <div>
                 <input type="file" id="regPhoto" accept="image/*" hidden>
-                <button class="photo-btn" type="button" id="pickPhotoBtn">Surat tanlash</button>
+                <button class="glass-btn" type="button" id="pickPhotoBtn">Surat tanlash</button>
               </div>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-secondary" type="button" id="cancelAuth">Bekor</button>
-          <button class="btn-primary" type="submit">Saqlash</button>
-        </div>
-      </form>
+          <div class="modal-footer" style="padding:8px 0 0">
+            <button class="glass-btn" type="button" id="cancelAuth">Bekor</button>
+            <button class="glass-btn primary" type="submit" style="flex:1">Saqlash</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -895,14 +569,19 @@
 
   <script>
     "use strict";
+    const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
     let currentVideos = [];
     let currentIndex = -1;
+    let nextPageToken = "";
+    let currentQuery = "";
+    let currentMode = "video";
     let ytPlayer = null;
     let ytReady = false;
     let suggestTimer = null;
     let suggestIndex = -1;
     let photoDataUrl = null;
+    let isLoadingMore = false;
 
     const searchForm = document.getElementById("searchForm");
     const queryInput = document.getElementById("query");
@@ -910,83 +589,111 @@
     const statusEl = document.getElementById("status");
     const resultsEl = document.getElementById("results");
     const resultCountEl = document.getElementById("resultCount");
+    const resultsTitle = document.getElementById("resultsTitle");
     const playerSection = document.getElementById("playerSection");
     const playingTitle = document.getElementById("playingTitle");
     const suggestionsEl = document.getElementById("suggestions");
     const authModal = document.getElementById("authModal");
     const toastEl = document.getElementById("toast");
+    const sidePanel = document.getElementById("sidePanel");
+    const panelOverlay = document.getElementById("panelOverlay");
 
     const PROFILE_KEY = "glass_music_profile";
+    const RECENT_KEY = "glass_music_recent";
 
-    function loadProfile() {
-      try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || null; }
-      catch { return null; }
+    function escapeHtml(str) {
+      return String(str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function cleanText(str) {
+      if (!str) return "";
+      const t = document.createElement("textarea");
+      t.innerHTML = str;
+      return t.value.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "").trim();
     }
 
+    function loadProfile() {
+      try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || null; } catch { return null; }
+    }
     function saveProfile(data) {
       localStorage.setItem(PROFILE_KEY, JSON.stringify(data));
       renderProfile();
     }
-
     function clearProfile() {
       localStorage.removeItem(PROFILE_KEY);
       photoDataUrl = null;
       renderProfile();
     }
-
     function renderProfile() {
       const p = loadProfile();
-      const nameEl = document.getElementById("sidebarName");
-      const emailEl = document.getElementById("sidebarEmail");
-      const avatarEl = document.getElementById("sidebarAvatar");
-      const authBtn = document.getElementById("authBtn");
-      const logoutBtn = document.getElementById("logoutBtn");
-      const dName = document.getElementById("drawerName");
-      const dEmail = document.getElementById("drawerEmail");
-      const dAvatar = document.getElementById("drawerAvatar");
-      const dAuth = document.getElementById("drawerAuthBtn");
-      const dLogout = document.getElementById("drawerLogoutBtn");
-      const mIcon = document.getElementById("mobileAvatarIcon");
-
+      const sets = [["sidebarName","sidebarEmail","sidebarAvatar"],["drawerName","drawerEmail","drawerAvatar"]];
+      const authBtns = [document.getElementById("authBtn"), document.getElementById("drawerAuthBtn")];
+      const logoutBtns = [document.getElementById("logoutBtn"), document.getElementById("drawerLogoutBtn")];
       if (p) {
-        const full = (p.name + " " + p.surname).trim();
-        nameEl.textContent = full;
-        emailEl.textContent = p.email;
-        dName.textContent = full;
-        dEmail.textContent = p.email;
-        authBtn.style.display = "none";
-        logoutBtn.style.display = "block";
-        dAuth.style.display = "none";
-        dLogout.style.display = "block";
-        const imgHtml = p.photo
-          ? `<img src="${p.photo}" alt="">`
-          : `<span class="avatar-placeholder">👤</span>`;
-        avatarEl.innerHTML = imgHtml;
-        dAvatar.innerHTML = imgHtml;
-        mIcon.innerHTML = p.photo
-          ? `<img src="${p.photo}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-          : "👤";
+        const full = ((p.name||"")+" "+(p.surname||"")).trim() || p.email || "Foydalanuvchi";
+        sets.forEach(([n,e,a]) => {
+          document.getElementById(n).textContent = full;
+          document.getElementById(e).textContent = p.email || "";
+          document.getElementById(a).innerHTML = p.photo ? `<img src="${p.photo}" alt="">` : `<span>👤</span>`;
+        });
+        authBtns.forEach(b => b && (b.style.display = "none"));
+        logoutBtns.forEach(b => b && (b.style.display = "block"));
       } else {
-        nameEl.textContent = "Mehmon";
-        emailEl.textContent = "Ro‘yxatdan o‘ting";
-        dName.textContent = "Mehmon";
-        dEmail.textContent = "Ro‘yxatdan o‘ting";
-        authBtn.style.display = "block";
-        logoutBtn.style.display = "none";
-        dAuth.style.display = "block";
-        dLogout.style.display = "none";
-        avatarEl.innerHTML = `<span class="avatar-placeholder">👤</span>`;
-        dAvatar.innerHTML = `<span class="avatar-placeholder">👤</span>`;
-        mIcon.textContent = "👤";
+        sets.forEach(([n,e,a]) => {
+          document.getElementById(n).textContent = "Mehmon";
+          document.getElementById(e).textContent = "Hisob ulang";
+          document.getElementById(a).innerHTML = `<span>👤</span>`;
+        });
+        authBtns.forEach(b => b && (b.style.display = "block"));
+        logoutBtns.forEach(b => b && (b.style.display = "none"));
       }
     }
 
     let toastTimer;
-    function showToast(msg, ms = 2800) {
+    function showToast(msg, ms=2800) {
       toastEl.textContent = msg;
       toastEl.classList.add("show");
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toastEl.classList.remove("show"), ms);
+    }
+
+    window.handleGoogleCredential = function(response) {
+      try {
+        const payload = JSON.parse(atob(response.credential.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")));
+        const nameParts = (payload.name || "").split(" ");
+        saveProfile({
+          name: nameParts[0] || payload.given_name || "",
+          surname: nameParts.slice(1).join(" ") || payload.family_name || "",
+          email: payload.email || "",
+          photo: payload.picture || null,
+          google: true,
+        });
+        closeAuthModal();
+        showToast("Google hisob ulandi ✓");
+      } catch (err) {
+        showToast("Google ulashda xato");
+        console.error(err);
+      }
+    };
+
+    function initGoogle() {
+      if (GOOGLE_CLIENT_ID.includes("YOUR_GOOGLE")) {
+        const wrap = document.getElementById("googleBtnWrap");
+        if (wrap) {
+          wrap.innerHTML = `<button class="glass-btn" type="button" style="width:100%" onclick="showToast('Google Client ID ni index.html ga qo\\'ying')">Google bilan kirish (sozlash kerak)</button>`;
+        }
+        return;
+      }
+      const onload = document.getElementById("g_id_onload");
+      if (onload) onload.setAttribute("data-client_id", GOOGLE_CLIENT_ID);
+      if (window.google?.accounts?.id) {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+          auto_select: true,
+          cancel_on_tap_outside: true,
+        });
+        google.accounts.id.prompt();
+      }
     }
 
     function openAuthModal() {
@@ -995,44 +702,25 @@
       document.getElementById("regSurname").value = p?.surname || "";
       document.getElementById("regEmail").value = p?.email || "";
       photoDataUrl = p?.photo || null;
-      const preview = document.getElementById("photoPreview");
-      preview.innerHTML = photoDataUrl
-        ? `<img src="${photoDataUrl}" alt="">`
-        : `<span>📷</span>`;
+      document.getElementById("photoPreview").innerHTML = photoDataUrl ? `<img src="${photoDataUrl}" alt="">` : `<span>📷</span>`;
       authModal.classList.add("show");
-      closeDrawer();
+      closeDrawer(); closePanel();
+      setTimeout(initGoogle, 100);
     }
-
-    function closeAuthModal() {
-      authModal.classList.remove("show");
-    }
+    function closeAuthModal() { authModal.classList.remove("show"); }
 
     document.getElementById("authBtn").addEventListener("click", openAuthModal);
     document.getElementById("drawerAuthBtn").addEventListener("click", openAuthModal);
     document.getElementById("closeAuthModal").addEventListener("click", closeAuthModal);
     document.getElementById("cancelAuth").addEventListener("click", closeAuthModal);
-    authModal.addEventListener("click", (e) => { if (e.target === authModal) closeAuthModal(); });
-
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      clearProfile();
-      showToast("Chiqildi");
-    });
-    document.getElementById("drawerLogoutBtn").addEventListener("click", () => {
-      clearProfile();
-      showToast("Chiqildi");
-      closeDrawer();
-    });
-
-    document.getElementById("pickPhotoBtn").addEventListener("click", () => {
-      document.getElementById("regPhoto").click();
-    });
-    document.getElementById("regPhoto").addEventListener("change", (e) => {
+    authModal.addEventListener("click", e => { if (e.target === authModal) closeAuthModal(); });
+    document.getElementById("logoutBtn").addEventListener("click", () => { clearProfile(); showToast("Chiqildi"); });
+    document.getElementById("drawerLogoutBtn").addEventListener("click", () => { clearProfile(); showToast("Chiqildi"); closeDrawer(); });
+    document.getElementById("pickPhotoBtn").addEventListener("click", () => document.getElementById("regPhoto").click());
+    document.getElementById("regPhoto").addEventListener("change", e => {
       const file = e.target.files?.[0];
       if (!file) return;
-      if (file.size > 2 * 1024 * 1024) {
-        showToast("Surat 2 MB dan kichik bo‘lsin");
-        return;
-      }
+      if (file.size > 2*1024*1024) { showToast("Surat 2 MB dan kichik bo‘lsin"); return; }
       const reader = new FileReader();
       reader.onload = () => {
         photoDataUrl = reader.result;
@@ -1040,16 +728,12 @@
       };
       reader.readAsDataURL(file);
     });
-
-    document.getElementById("authForm").addEventListener("submit", (e) => {
+    document.getElementById("authForm").addEventListener("submit", e => {
       e.preventDefault();
       const name = document.getElementById("regName").value.trim();
       const surname = document.getElementById("regSurname").value.trim();
       const email = document.getElementById("regEmail").value.trim();
-      if (!name || !surname || !email) {
-        showToast("Barcha maydonlarni to‘ldiring");
-        return;
-      }
+      if (!name && !email) { showToast("Ism yoki email kiriting"); return; }
       saveProfile({ name, surname, email, photo: photoDataUrl });
       closeAuthModal();
       showToast("Profil saqlandi ✓");
@@ -1057,68 +741,50 @@
 
     const mobileDrawer = document.getElementById("mobileDrawer");
     const drawerOverlay = document.getElementById("drawerOverlay");
-
-    function openDrawer() {
-      mobileDrawer.classList.add("show");
-      drawerOverlay.classList.add("show");
-    }
-    function closeDrawer() {
-      mobileDrawer.classList.remove("show");
-      drawerOverlay.classList.remove("show");
-    }
-    document.getElementById("mobileProfileBtn").addEventListener("click", openDrawer);
+    function openDrawer() { mobileDrawer.classList.add("show"); drawerOverlay.classList.add("show"); }
+    function closeDrawer() { mobileDrawer.classList.remove("show"); drawerOverlay.classList.remove("show"); }
+    function openPanel() { sidePanel.classList.add("show"); panelOverlay.classList.add("show"); }
+    function closePanel() { sidePanel.classList.remove("show"); panelOverlay.classList.remove("show"); }
+    document.getElementById("mobileMenuBtn")?.addEventListener("click", openDrawer);
+    document.getElementById("mobilePanelBtn")?.addEventListener("click", openPanel);
+    document.getElementById("railMenuBtn")?.addEventListener("click", openPanel);
+    document.getElementById("closePanelBtn")?.addEventListener("click", closePanel);
     drawerOverlay.addEventListener("click", closeDrawer);
+    panelOverlay.addEventListener("click", closePanel);
+    document.getElementById("railShortsBtn")?.addEventListener("click", () => {
+      currentMode = "shorts"; setModeUI(); searchMusic("shorts music", false);
+    });
+    document.getElementById("railHomeBtn")?.addEventListener("click", () => {
+      currentMode = "video"; setModeUI(); searchMusic("Uzbek music 2025", false);
+    });
+    document.getElementById("railShareBtn")?.addEventListener("click", sharePage);
 
     function loadYouTubeAPI() {
-      if (window.YT && window.YT.Player) {
-        ytReady = true;
-        return;
-      }
+      if (window.YT && window.YT.Player) { ytReady = true; return; }
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
       document.head.appendChild(tag);
       window.onYouTubeIframeAPIReady = () => {
         ytReady = true;
-        if (currentIndex >= 0 && currentVideos[currentIndex]) {
-          createOrLoadPlayer(currentVideos[currentIndex].id);
-        }
+        if (currentIndex >= 0 && currentVideos[currentIndex]) createOrLoadPlayer(currentVideos[currentIndex].id);
       };
     }
-
     function createOrLoadPlayer(videoId) {
       if (!ytReady) {
-        const el = document.getElementById("player");
-        el.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&enablejsapi=1&playsinline=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0;position:absolute;inset:0"></iframe>`;
+        document.getElementById("player").innerHTML =
+          `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&enablejsapi=1&playsinline=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0;position:absolute;inset:0"></iframe>`;
         return;
       }
-
       if (ytPlayer && typeof ytPlayer.loadVideoById === "function") {
         try {
-          ytPlayer.loadVideoById({
-            videoId,
-            suggestedQuality: document.getElementById("qualitySelect").value || "default"
-          });
-        } catch (_) {
-          ytPlayer = null;
-          createOrLoadPlayer(videoId);
-        }
+          ytPlayer.loadVideoById({ videoId, suggestedQuality: document.getElementById("qualitySelect").value || "default" });
+        } catch (_) { ytPlayer = null; createOrLoadPlayer(videoId); }
         return;
       }
-
-      const container = document.getElementById("player");
-      container.innerHTML = "";
+      document.getElementById("player").innerHTML = "";
       ytPlayer = new YT.Player("player", {
-        videoId,
-        width: "100%",
-        height: "100%",
-        playerVars: {
-          autoplay: 1,
-          rel: 0,
-          modestbranding: 1,
-          playsinline: 1,
-          enablejsapi: 1,
-          origin: location.origin
-        },
+        videoId, width: "100%", height: "100%",
+        playerVars: { autoplay:1, rel:0, modestbranding:1, playsinline:1, enablejsapi:1, origin: location.origin },
         events: {
           onReady: (e) => {
             try {
@@ -1133,196 +799,144 @@
             else if (e.data === 1) updatePlayPauseUI(true);
             else if (e.data === 2) updatePlayPauseUI(false);
           },
-          onError: () => {
-            showToast("Video yuklanmadi, keyingisiga o‘tilmoqda...");
-            setTimeout(playNext, 800);
-          }
+          onError: () => { showToast("Video yuklanmadi, keyingisi..."); setTimeout(playNext, 700); }
         }
       });
     }
-
     function updatePlayPauseUI(playing) {
-      const icon = document.getElementById("playPauseIcon");
-      const text = document.getElementById("playPauseText");
-      if (playing) {
-        icon.innerHTML = `<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>`;
-        text.textContent = "Pauza";
-      } else {
-        icon.innerHTML = `<path d="M8 5v14l11-7z"/>`;
-        text.textContent = "Ijro";
-      }
+      document.getElementById("playPauseText").textContent = playing ? "⏸ Pauza" : "▶ Ijro";
     }
-
     function playVideoAt(index) {
       if (index < 0 || index >= currentVideos.length) return;
       currentIndex = index;
       const video = currentVideos[index];
-      playingTitle.textContent = video.title || "Video";
+      playingTitle.textContent = cleanText(video.title) || "Video";
       playerSection.classList.add("show");
       playerSection.scrollIntoView({ behavior: "smooth", block: "start" });
-
-      document.querySelectorAll(".video-card").forEach((c, i) => {
-        c.classList.toggle("playing", i === index);
-      });
-
+      document.querySelectorAll(".video-card").forEach((c,i) => c.classList.toggle("playing", i === index));
       createOrLoadPlayer(video.id);
     }
-
     function playNext() {
-      if (currentVideos.length === 0) return;
-      const next = currentIndex + 1;
-      if (next < currentVideos.length) playVideoAt(next);
+      if (!currentVideos.length) return;
+      if (currentIndex + 1 < currentVideos.length) playVideoAt(currentIndex + 1);
+      else if (nextPageToken) loadMore().then(() => playVideoAt(currentIndex + 1));
       else showToast("Ro‘yxat tugadi");
     }
-
-    function playPrev() {
-      if (currentIndex > 0) playVideoAt(currentIndex - 1);
-    }
+    function playPrev() { if (currentIndex > 0) playVideoAt(currentIndex - 1); }
 
     document.getElementById("nextBtn").addEventListener("click", playNext);
     document.getElementById("prevBtn").addEventListener("click", playPrev);
     document.getElementById("playPauseBtn").addEventListener("click", () => {
       if (!ytPlayer) return;
-      try {
-        const state = ytPlayer.getPlayerState();
-        if (state === 1) ytPlayer.pauseVideo();
-        else ytPlayer.playVideo();
-      } catch (_) {}
+      try { const s = ytPlayer.getPlayerState(); if (s === 1) ytPlayer.pauseVideo(); else ytPlayer.playVideo(); } catch (_) {}
     });
     document.getElementById("closePlayerBtn").addEventListener("click", () => {
-      if (ytPlayer && typeof ytPlayer.stopVideo === "function") {
-        try { ytPlayer.stopVideo(); } catch (_) {}
-      }
+      try { ytPlayer?.stopVideo?.(); } catch (_) {}
       document.getElementById("player").innerHTML = "";
       ytPlayer = null;
       playerSection.classList.remove("show");
       currentIndex = -1;
       document.querySelectorAll(".video-card.playing").forEach(c => c.classList.remove("playing"));
     });
-
-    document.getElementById("qualitySelect").addEventListener("change", (e) => {
+    document.getElementById("qualitySelect").addEventListener("change", e => {
       const q = e.target.value;
-      if (ytPlayer && typeof ytPlayer.setPlaybackQuality === "function") {
+      if (ytPlayer?.setPlaybackQuality) {
         try {
           ytPlayer.setPlaybackQuality(q === "default" ? "default" : q);
-          showToast("Sifat o‘zgartirildi: " + (q === "default" ? "Avto" : q));
-        } catch (_) {
-          showToast("Sifatni o‘zgartirish mumkin emas (YouTube cheklovi)");
-        }
+          showToast("Sifat: " + (q === "default" ? "Avto" : q));
+        } catch (_) { showToast("Sifat o‘zgarmadi (YouTube cheklovi)"); }
       }
     });
 
+    function shareVideo(video) {
+      const url = "https://www.youtube.com/watch?v=" + video.id;
+      if (navigator.share) navigator.share({ title: video.title, url }).catch(() => copyLink(url));
+      else copyLink(url);
+    }
+    function sharePage() {
+      const url = location.href;
+      if (navigator.share) navigator.share({ title: "Glass Music", url }).catch(() => copyLink(url));
+      else copyLink(url);
+    }
+    function copyLink(url) {
+      navigator.clipboard?.writeText(url).then(() => showToast("Havola nusxalandi")).catch(() => prompt("Havolani nusxalang:", url));
+    }
+
     async function fetchSuggestions(q) {
-      if (!q || q.length < 2) {
-        suggestionsEl.classList.remove("show");
-        suggestionsEl.innerHTML = "";
-        return;
-      }
+      if (!q || q.length < 2) { suggestionsEl.classList.remove("show"); return; }
       try {
-        const url = `https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=${encodeURIComponent(q)}&callback=suggestCallback`;
         const old = document.getElementById("suggestScript");
         if (old) old.remove();
         window.suggestCallback = (data) => {
-          const list = (data && data[1])
-            ? data[1].map(x => (Array.isArray(x) ? x[0] : x)).filter(Boolean)
-            : [];
+          const list = (data && data[1]) ? data[1].map(x => Array.isArray(x) ? x[0] : x).filter(Boolean) : [];
           renderSuggestions(list.slice(0, 8));
         };
         const s = document.createElement("script");
         s.id = "suggestScript";
-        s.src = url;
+        s.src = `https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=${encodeURIComponent(q)}&callback=suggestCallback`;
         s.onerror = () => {
-          const recent = getRecentSearches().filter(r =>
-            r.toLowerCase().includes(q.toLowerCase())
-          );
+          const recent = getRecent().filter(r => r.toLowerCase().includes(q.toLowerCase()));
           renderSuggestions(recent.slice(0, 6));
         };
         document.body.appendChild(s);
-      } catch {
-        suggestionsEl.classList.remove("show");
-      }
+      } catch { suggestionsEl.classList.remove("show"); }
     }
-
     function renderSuggestions(items) {
-      if (!items.length) {
-        suggestionsEl.classList.remove("show");
-        suggestionsEl.innerHTML = "";
-        return;
-      }
-      suggestionsEl.innerHTML = items.map((text, i) => `
-        <button type="button" class="suggestion-item" role="option" data-index="${i}" data-text="${escapeHtml(text)}">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      if (!items.length) { suggestionsEl.classList.remove("show"); return; }
+      suggestionsEl.innerHTML = items.map(text => `
+        <button type="button" class="suggestion-item" data-text="${escapeHtml(text)}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
           <span>${escapeHtml(text)}</span>
-        </button>
-      `).join("");
+        </button>`).join("");
       suggestionsEl.classList.add("show");
       suggestIndex = -1;
-
       suggestionsEl.querySelectorAll(".suggestion-item").forEach(btn => {
         btn.addEventListener("click", () => {
           queryInput.value = btn.dataset.text;
           suggestionsEl.classList.remove("show");
-          searchMusic(btn.dataset.text);
+          searchMusic(btn.dataset.text, false);
         });
       });
     }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
     queryInput.addEventListener("input", () => {
       clearTimeout(suggestTimer);
-      const q = queryInput.value.trim();
-      suggestTimer = setTimeout(() => fetchSuggestions(q), 220);
+      suggestTimer = setTimeout(() => fetchSuggestions(queryInput.value.trim()), 200);
     });
-
-    queryInput.addEventListener("keydown", (e) => {
+    queryInput.addEventListener("keydown", e => {
       const items = suggestionsEl.querySelectorAll(".suggestion-item");
       if (!suggestionsEl.classList.contains("show") || !items.length) return;
       if (e.key === "ArrowDown") {
         e.preventDefault();
         suggestIndex = Math.min(suggestIndex + 1, items.length - 1);
-        items.forEach((el, i) => el.classList.toggle("active", i === suggestIndex));
+        items.forEach((el,i) => el.classList.toggle("active", i === suggestIndex));
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         suggestIndex = Math.max(suggestIndex - 1, -1);
-        items.forEach((el, i) => el.classList.toggle("active", i === suggestIndex));
+        items.forEach((el,i) => el.classList.toggle("active", i === suggestIndex));
       } else if (e.key === "Enter" && suggestIndex >= 0) {
-        e.preventDefault();
-        items[suggestIndex].click();
-      } else if (e.key === "Escape") {
-        suggestionsEl.classList.remove("show");
-      }
+        e.preventDefault(); items[suggestIndex].click();
+      } else if (e.key === "Escape") suggestionsEl.classList.remove("show");
+    });
+    document.addEventListener("click", e => {
+      if (!e.target.closest(".search-wrap")) suggestionsEl.classList.remove("show");
     });
 
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest(".search-wrap")) {
-        suggestionsEl.classList.remove("show");
-      }
-    });
-
-    const RECENT_KEY = "glass_music_recent";
-    function getRecentSearches() {
-      try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; }
-      catch { return []; }
+    function getRecent() {
+      try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch { return []; }
     }
-    function addRecentSearch(term) {
-      let list = getRecentSearches().filter(t => t.toLowerCase() !== term.toLowerCase());
+    function addRecent(term) {
+      let list = getRecent().filter(t => t.toLowerCase() !== term.toLowerCase());
       list.unshift(term);
-      list = list.slice(0, 12);
-      localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+      localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 15)));
     }
 
     function setStatus(msg) { statusEl.textContent = msg; }
-
-    function showEmpty(msg) {
-      resultsEl.innerHTML = `<div class="empty">${escapeHtml(msg)}</div>`;
-      resultCountEl.textContent = "0 ta video";
+    function setModeUI() {
+      document.querySelectorAll(".chip").forEach(c => {
+        c.classList.toggle("active", c.dataset.mode === currentMode || (currentMode === "video" && c.dataset.mode === "video"));
+      });
+      resultsTitle.textContent = currentMode === "shorts" ? "Shorts" : "Videolar";
+      document.getElementById("topTitle").textContent = currentMode === "shorts" ? "Shorts" : "Musiqa va video";
     }
 
     function createVideoCard(video, index) {
@@ -1330,121 +944,165 @@
       card.className = "video-card";
       card.tabIndex = 0;
       card.setAttribute("role", "button");
-      card.setAttribute("aria-label", "Ijro etish: " + (video.title || "Video"));
-
-      const thumbUrl = video.thumbnail ||
-        `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`;
-
+      const title = cleanText(video.title) || "Nomsiz video";
+      const channel = cleanText(video.channel) || "YouTube";
+      const thumb = video.thumbnail || `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`;
       card.innerHTML = `
         <div class="thumb-wrap">
-          <img class="thumb" loading="lazy" alt="" src="${escapeHtml(thumbUrl)}">
-          <div class="play-overlay">
-            <div class="play-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            </div>
-          </div>
+          <img class="thumb" loading="lazy" alt="" src="${escapeHtml(thumb)}">
+          <div class="play-overlay"><div class="play-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </div></div>
         </div>
         <div class="card-body">
-          <div class="video-title">${escapeHtml(video.title || "Nomsiz video")}</div>
-          <div class="channel">${escapeHtml(video.channel || "YouTube")}</div>
-        </div>
-      `;
-
-      const play = () => playVideoAt(index);
-      card.addEventListener("click", play);
-      card.addEventListener("keydown", (ev) => {
-        if (ev.key === "Enter" || ev.key === " ") {
-          ev.preventDefault();
-          play();
-        }
+          <div class="video-title">${escapeHtml(title)}</div>
+          <div class="channel">${escapeHtml(channel)}</div>
+          <div class="card-actions">
+            <button class="share-btn" type="button" data-share>↗ Ulashish</button>
+          </div>
+        </div>`;
+      card.addEventListener("click", e => {
+        if (e.target.closest("[data-share]")) return;
+        playVideoAt(index);
+      });
+      card.querySelector("[data-share]").addEventListener("click", e => {
+        e.stopPropagation();
+        shareVideo(video);
+      });
+      card.addEventListener("keydown", ev => {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); playVideoAt(index); }
       });
       return card;
     }
 
-    async function searchMusic(searchTerm) {
-      const term = (searchTerm || "").trim();
-      if (!term) {
-        setStatus("Iltimos, qidiruv uchun nom yozing.");
-        queryInput.focus();
+    function renderResults(append) {
+      if (!append) resultsEl.innerHTML = "";
+      if (!currentVideos.length && !append) {
+        resultsEl.innerHTML = `<div class="empty">Video topilmadi.</div>`;
+        resultCountEl.textContent = "0 ta";
         return;
       }
-
-      suggestionsEl.classList.remove("show");
-      searchButton.disabled = true;
-      searchButton.textContent = "Qidirilmoqda...";
-      setStatus("YouTube’dan natijalar olinmoqda...");
-      showEmpty("Natijalar yuklanmoqda...");
-
-      try {
-        const response = await fetch("/api/search?q=" + encodeURIComponent(term));
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok) {
-          throw new Error(data.error || "Server xatosi (" + response.status + ")");
-        }
-        if (!Array.isArray(data.videos)) {
-          throw new Error("Server javobi noto‘g‘ri formatda.");
-        }
-
-        currentVideos = data.videos.filter(v => v && v.id);
-        currentIndex = -1;
-
-        resultsEl.innerHTML = "";
-        if (currentVideos.length === 0) {
-          showEmpty("Bu so‘rov bo‘yicha video topilmadi.");
-          setStatus("Natija topilmadi.");
-          return;
-        }
-
-        currentVideos.forEach((video, i) => {
-          resultsEl.appendChild(createVideoCard(video, i));
-        });
-        resultCountEl.textContent = currentVideos.length + " ta video";
-        setStatus("Tayyor. Videoni bosib shu sahifada ijro eting. Tugagach avtomatik keyingisi ochiladi.");
-        addRecentSearch(term);
-      } catch (error) {
-        showEmpty("Qidiruv amalga oshmadi.");
-        setStatus(error.message || "Xatolik yuz berdi. Server va API kalitini tekshiring.");
-        currentVideos = [];
-      } finally {
-        searchButton.disabled = false;
-        searchButton.textContent = "Qidirish";
+      resultsEl.querySelector(".load-more-wrap")?.remove();
+      const start = append ? resultsEl.querySelectorAll(".video-card").length : 0;
+      currentVideos.slice(start).forEach((video, i) => {
+        resultsEl.appendChild(createVideoCard(video, start + i));
+      });
+      resultCountEl.textContent = currentVideos.length + " ta" + (nextPageToken ? "+" : "");
+      if (nextPageToken) {
+        const wrap = document.createElement("div");
+        wrap.className = "load-more-wrap";
+        wrap.innerHTML = `<button class="glass-btn primary" type="button" id="loadMoreBtn">Yana yuklash</button>`;
+        resultsEl.appendChild(wrap);
+        document.getElementById("loadMoreBtn").addEventListener("click", () => loadMore());
       }
     }
 
-    searchForm.addEventListener("submit", (e) => {
+    async function searchMusic(term, append) {
+      term = (term || "").trim();
+      if (!term) { setStatus("Nom yozing."); queryInput.focus(); return; }
+      suggestionsEl.classList.remove("show");
+      if (!append) {
+        searchButton.disabled = true;
+        searchButton.textContent = "Qidirilmoqda...";
+        setStatus("YouTube’dan olinmoqda...");
+        resultsEl.innerHTML = `<div class="empty">Natijalar yuklanmoqda...</div>`;
+        currentVideos = [];
+        nextPageToken = "";
+        currentIndex = -1;
+      }
+      currentQuery = term;
+      try {
+        const type = currentMode === "shorts" ? "shorts" : "video";
+        const url = `/api/search?q=${encodeURIComponent(term)}&type=${type}&max=30` +
+          (append && nextPageToken ? `&pageToken=${encodeURIComponent(nextPageToken)}` : "");
+        const response = await fetch(url);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Server xatosi (" + response.status + ")");
+        if (!Array.isArray(data.videos)) throw new Error("Noto‘g‘ri javob formati");
+        const cleaned = data.videos.filter(v => v && v.id).map(v => ({
+          ...v, title: cleanText(v.title), channel: cleanText(v.channel),
+        }));
+        if (append) currentVideos = currentVideos.concat(cleaned);
+        else currentVideos = cleaned;
+        nextPageToken = data.nextPageToken || "";
+        renderResults(!!append);
+        setStatus(currentVideos.length
+          ? "Tayyor. Bosib ijro eting · tugagach keyingisi · Yana yuklash mumkin"
+          : "Natija topilmadi.");
+        if (!append) addRecent(term);
+        queryInput.value = term;
+      } catch (err) {
+        if (!append) {
+          resultsEl.innerHTML = `<div class="empty">Qidiruv amalga oshmadi.</div>`;
+          setStatus(err.message || "Xatolik");
+          currentVideos = [];
+        } else showToast(err.message || "Yana yuklashda xato");
+      } finally {
+        searchButton.disabled = false;
+        searchButton.textContent = "Qidirish";
+        isLoadingMore = false;
+      }
+    }
+
+    async function loadMore() {
+      if (!nextPageToken || isLoadingMore || !currentQuery) return;
+      isLoadingMore = true;
+      const btn = document.getElementById("loadMoreBtn");
+      if (btn) { btn.disabled = true; btn.textContent = "Yuklanmoqda..."; }
+      await searchMusic(currentQuery, true);
+    }
+
+    searchForm.addEventListener("submit", e => {
       e.preventDefault();
-      searchMusic(queryInput.value);
+      searchMusic(queryInput.value, false);
     });
 
-    document.querySelectorAll("[data-action]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const action = btn.dataset.action;
-        document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-        btn.classList.add("active");
-        closeDrawer();
+    document.querySelectorAll(".chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const m = chip.dataset.mode;
+        if (m === "shorts") { currentMode = "shorts"; setModeUI(); searchMusic(queryInput.value.trim() || "shorts music", false); }
+        else if (m === "uzbek") { currentMode = "video"; setModeUI(); searchMusic("O'zbekiston musiqasi 2025", false); }
+        else if (m === "pop") { currentMode = "video"; setModeUI(); searchMusic("pop music hits", false); }
+        else { currentMode = "video"; setModeUI(); if (queryInput.value.trim()) searchMusic(queryInput.value, false); }
+      });
+    });
 
-        if (action === "trending") {
-          queryInput.value = "Uzbek music 2025";
-          searchMusic("Uzbek music 2025");
-        } else if (action === "recent") {
-          const recent = getRecentSearches();
-          if (recent.length) {
-            renderSuggestions(recent);
-            suggestionsEl.classList.add("show");
-            queryInput.focus();
-            setStatus("So‘nggi qidiruvlaringiz — birini tanlang.");
-          } else {
-            showToast("Hali qidiruv tarixi yo‘q");
-          }
-        } else {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+    function handleAction(action) {
+      closeDrawer(); closePanel();
+      if (action === "home") { currentMode = "video"; setModeUI(); searchMusic("Uzbek music 2025", false); }
+      else if (action === "trending") { currentMode = "video"; setModeUI(); searchMusic("trending music 2025", false); }
+      else if (action === "shorts") { currentMode = "shorts"; setModeUI(); searchMusic("shorts music", false); }
+      else if (action === "recent") {
+        const recent = getRecent();
+        if (recent.length) {
+          renderSuggestions(recent);
+          suggestionsEl.classList.add("show");
+          queryInput.focus();
+          setStatus("So‘nggi qidiruvlar — tanlang");
+        } else showToast("Hali tarix yo‘q");
+      } else if (action === "auth") openAuthModal();
+      else if (action === "sharepage") sharePage();
+    }
+    document.querySelectorAll("[data-action]").forEach(btn => {
+      btn.addEventListener("click", () => handleAction(btn.dataset.action));
+    });
+
+    let scrollTick = false;
+    window.addEventListener("scroll", () => {
+      if (scrollTick) return;
+      scrollTick = true;
+      requestAnimationFrame(() => {
+        scrollTick = false;
+        if (!nextPageToken || isLoadingMore) return;
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) loadMore();
       });
     });
 
     loadYouTubeAPI();
     renderProfile();
+    setModeUI();
+    searchMusic("Uzbek music 2025", false);
+    window.addEventListener("load", () => setTimeout(initGoogle, 400));
   </script>
 </body>
 </html>
