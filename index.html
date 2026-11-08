@@ -2,122 +2,907 @@
 <html lang="uz">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
   <meta name="theme-color" content="#090b12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Glass Music</title>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #080a11;
-      --panel: rgba(255,255,255,.075);
-      --line: rgba(255,255,255,.13);
-      --text: #f6f7fb;
-      --muted: #a9b0c2;
-      --accent: #9a8cff;
-      --accent2: #62d9ff;
+      --bg: #07090f;
+      --panel: rgba(255, 255, 255, 0.07);
+      --panel-strong: rgba(255, 255, 255, 0.11);
+      --line: rgba(255, 255, 255, 0.14);
+      --line-soft: rgba(255, 255, 255, 0.08);
+      --text: #f4f6fb;
+      --muted: #9aa3b8;
+      --accent: #a78bfa;
+      --accent2: #38bdf8;
+      --accent-grad: linear-gradient(135deg, #c4b5fd 0%, #67e8f9 100%);
+      --glass-blur: 28px;
+      --radius: 22px;
+      --radius-lg: 28px;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
     }
-    * { box-sizing: border-box; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
-      margin: 0; min-height: 100vh; color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100dvh;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       background:
-        radial-gradient(ellipse at 12% 0%, rgba(112,83,255,.27), transparent 36%),
-        radial-gradient(ellipse at 88% 18%, rgba(39,190,255,.16), transparent 34%),
-        linear-gradient(160deg, #080a11, #111426 55%, #080a11);
+        radial-gradient(ellipse 80% 50% at 10% -10%, rgba(139, 92, 246, 0.28), transparent 50%),
+        radial-gradient(ellipse 60% 40% at 90% 5%, rgba(14, 165, 233, 0.18), transparent 45%),
+        radial-gradient(ellipse 50% 30% at 50% 100%, rgba(99, 102, 241, 0.12), transparent 40%),
+        linear-gradient(165deg, #07090f 0%, #0f1220 45%, #07090f 100%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
     }
-    button, input { font: inherit; }
-    .shell { width: min(1100px, 100%); margin: auto; padding: 24px 18px 60px; }
-    header { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:26px; }
-    .brand { display:flex; align-items:center; gap:12px; font-size:21px; font-weight:800; letter-spacing:.2px; }
-    .logo { width:42px; height:42px; border-radius:15px; display:grid; place-items:center;
-      background:linear-gradient(135deg, rgba(164,143,255,.95), rgba(66,201,255,.8));
-      box-shadow:0 8px 30px rgba(101,106,255,.28); color:#080a11; }
-    .top-note { color:var(--muted); font-size:13px; }
-    .hero { padding:28px; border:1px solid var(--line); border-radius:30px;
-      background:linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.035));
-      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-      box-shadow:0 20px 70px rgba(0,0,0,.24); }
-    .eyebrow { color:var(--accent2); font-size:12px; text-transform:uppercase; letter-spacing:2px; font-weight:700; }
-    h1 { margin:10px 0 8px; font-size:clamp(30px,6vw,54px); letter-spacing:-1.8px; }
-    .subtitle { color:var(--muted); margin:0 0 22px; line-height:1.5; }
-    form { display:flex; gap:10px; width:100%; }
-    input { min-width:0; flex:1; border:1px solid var(--line); border-radius:17px; padding:15px 17px;
-      color:var(--text); background:rgba(4,6,12,.55); outline:none; }
-    input:focus { border-color:rgba(154,140,255,.75); box-shadow:0 0 0 3px rgba(154,140,255,.12); }
-    button { border:0; border-radius:17px; padding:0 22px; color:#0a0b13; font-weight:800;
-      background:linear-gradient(135deg,#b7aaff,#71e0ff); cursor:pointer; }
-    button:disabled { opacity:.55; cursor:wait; }
-    .status { min-height:22px; margin:14px 2px 0; color:var(--muted); font-size:14px; }
-    .section-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:28px 2px 14px; }
-    h2 { margin:0; font-size:20px; }
-    .count { color:var(--muted); font-size:13px; }
-    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:15px; }
-    .video-card { overflow:hidden; border:1px solid var(--line); border-radius:22px; background:var(--panel);
-      backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); cursor:pointer; transition:transform .18s,border-color .18s; }
-    .video-card:hover { transform:translateY(-3px); border-color:rgba(154,140,255,.5); }
-    .thumb { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; background:#171a28; }
-    .card-body { padding:13px 14px 15px; }
-    .video-title { font-size:14px; line-height:1.45; font-weight:700; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .channel { margin-top:8px; font-size:12px; color:var(--muted); }
-    .player-panel { margin-top:25px; padding:17px; border:1px solid var(--line); border-radius:26px; background:var(--panel); display:none; }
-    .player-panel.show { display:block; }
-    .playing-title { font-weight:750; margin:0 0 13px; }
-    .player-wrap { overflow:hidden; border-radius:18px; background:#000; aspect-ratio:16/9; }
-    iframe { display:block; width:100%; height:100%; border:0; }
-    .empty { grid-column:1/-1; padding:24px; text-align:center; color:var(--muted); border:1px dashed var(--line); border-radius:20px; }
-    footer { margin-top:35px; text-align:center; color:#81899b; font-size:12px; }
-    @media(max-width:760px) {
-      .shell { padding:16px 13px 40px; }
-      .hero { padding:22px 17px; border-radius:25px; }
-      .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-      .card-body { padding:10px; }
-      .video-title { font-size:13px; }
-      form { flex-direction:column; }
-      button { min-height:48px; }
-      .top-note { display:none; }
+
+    button, input, select { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+    img { display: block; max-width: 100%; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100dvh;
+      max-width: 1440px;
+      margin: 0 auto;
     }
-    @media(max-width:420px) { .grid { grid-template-columns:1fr; } }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100dvh;
+      padding: 20px 16px;
+      border-right: 1px solid var(--line-soft);
+      background: rgba(8, 10, 18, 0.55);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      z-index: 40;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      padding: 4px 6px;
+    }
+    .logo {
+      width: 42px; height: 42px;
+      border-radius: 14px;
+      display: grid; place-items: center;
+      background: var(--accent-grad);
+      box-shadow: 0 8px 28px rgba(139, 92, 246, 0.35);
+      color: #0a0b13;
+      font-size: 20px;
+    }
+
+    .profile-card {
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+    .avatar-wrap { position: relative; width: 72px; height: 72px; }
+    .avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(167, 139, 250, 0.5);
+      background: linear-gradient(145deg, #1e1b4b, #0f172a);
+      display: grid; place-items: center;
+      font-size: 28px;
+      overflow: hidden;
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .avatar-placeholder { color: var(--accent); }
+    .profile-name { font-weight: 700; font-size: 15px; line-height: 1.3; }
+    .profile-email { font-size: 12px; color: var(--muted); word-break: break-all; }
+    .btn-auth {
+      width: 100%;
+      padding: 11px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 13px;
+      background: var(--accent-grad);
+      color: #0a0b13;
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.25);
+      transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+    }
+    .btn-auth:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(139, 92, 246, 0.35); }
+    .btn-auth:active { transform: scale(0.98); }
+    .btn-ghost {
+      width: 100%;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      border: 1px solid var(--line-soft);
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-ghost:hover { background: var(--panel); color: var(--text); }
+
+    .nav-section { margin-top: 8px; }
+    .nav-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      padding: 0 8px 8px;
+      font-weight: 600;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      transition: background 0.15s, color 0.15s;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: var(--panel-strong);
+      color: var(--text);
+    }
+    .nav-item svg { flex-shrink: 0; opacity: 0.85; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--line-soft);
+      font-size: 11px;
+      color: #6b7280;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* MAIN */
+    .main {
+      padding: 22px 28px 80px;
+      min-width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .topbar-title { font-size: 15px; color: var(--muted); font-weight: 500; }
+    .mobile-profile-btn {
+      display: none;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      overflow: hidden;
+      place-items: center;
+      font-size: 18px;
+    }
+    .mobile-profile-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* HERO */
+    .hero {
+      padding: 28px 30px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03));
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(167,139,250,0.12), transparent 45%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      color: var(--accent2);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: clamp(28px, 5vw, 46px);
+      letter-spacing: -1.6px;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 22px;
+      max-width: 520px;
+    }
+
+    .search-wrap { position: relative; z-index: 20; }
+    .search-form { display: flex; gap: 10px; width: 100%; }
+    .search-input-wrap { flex: 1; position: relative; min-width: 0; }
+    .search-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px 18px 15px 46px;
+      color: var(--text);
+      background: rgba(4, 6, 14, 0.6);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input:focus {
+      border-color: rgba(167, 139, 250, 0.7);
+      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+    }
+    .search-icon {
+      position: absolute;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .btn-search {
+      border-radius: 16px;
+      padding: 0 26px;
+      font-weight: 800;
+      font-size: 14px;
+      color: #0a0b13;
+      background: var(--accent-grad);
+      box-shadow: 0 6px 22px rgba(139, 92, 246, 0.28);
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      white-space: nowrap;
+    }
+    .btn-search:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(139, 92, 246, 0.38); }
+    .btn-search:disabled { opacity: 0.55; cursor: wait; transform: none; }
+
+    .suggestions {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0; right: 0;
+      background: rgba(12, 14, 24, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+      max-height: 280px;
+      overflow-y: auto;
+      display: none;
+      z-index: 50;
+    }
+    .suggestions.show { display: block; }
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      width: 100%;
+      text-align: left;
+      font-size: 14px;
+      color: var(--text);
+      transition: background 0.12s;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .suggestion-item:last-child { border-bottom: none; }
+    .suggestion-item:hover, .suggestion-item.active {
+      background: rgba(167, 139, 250, 0.12);
+    }
+    .suggestion-item svg { flex-shrink: 0; color: var(--muted); }
+
+    .status {
+      min-height: 22px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* PLAYER */
+    .player-section {
+      display: none;
+      margin-bottom: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--panel);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .player-section.show { display: block; }
+    .player-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .playing-title {
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.35;
+      flex: 1;
+      min-width: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .player-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .icon-btn {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      border: 1px solid var(--line-soft);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .icon-btn:hover { background: var(--panel-strong); border-color: var(--line); }
+    .player-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    #player {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .player-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line-soft);
+      flex-wrap: wrap;
+    }
+    .ctrl-group { display: flex; align-items: center; gap: 8px; }
+    .ctrl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--line-soft);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      transition: background 0.15s, transform 0.12s;
+    }
+    .ctrl-btn:hover { background: var(--panel-strong); }
+    .ctrl-btn:active { transform: scale(0.97); }
+    .ctrl-btn.primary {
+      background: var(--accent-grad);
+      color: #0a0b13;
+      border: none;
+    }
+    .quality-select {
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line-soft);
+      background: rgba(4, 6, 14, 0.7);
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+    }
+    .quality-select:focus { border-color: rgba(167,139,250,0.6); }
+
+    /* RESULTS */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .section-head h2 { font-size: 18px; font-weight: 700; }
+    .count { color: var(--muted); font-size: 13px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .video-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .video-card:hover, .video-card:focus-visible {
+      transform: translateY(-4px);
+      border-color: rgba(167, 139, 250, 0.45);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+    .video-card.playing {
+      border-color: rgba(167, 139, 250, 0.7);
+      box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.25);
+    }
+    .thumb-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #12151f;
+      overflow: hidden;
+    }
+    .thumb {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .video-card:hover .thumb { transform: scale(1.04); }
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .video-card:hover .play-overlay { opacity: 1; }
+    .play-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--accent-grad);
+      display: grid; place-items: center;
+      color: #0a0b13;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    }
+    .card-body { padding: 12px 14px 14px; }
+    .video-title {
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 650;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .channel {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .empty {
+      grid-column: 1 / -1;
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      width: min(420px, 100%);
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(14, 16, 28, 0.95);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .modal-header h3 { font-size: 17px; font-weight: 700; }
+    .modal-close {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: grid; place-items: center;
+      color: var(--muted);
+      transition: background 0.15s, color 0.15s;
+    }
+    .modal-close:hover { background: var(--panel); color: var(--text); }
+    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .form-group input {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      background: rgba(4, 6, 14, 0.55);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: rgba(167, 139, 250, 0.65); }
+    .photo-upload { display: flex; align-items: center; gap: 14px; }
+    .photo-preview {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      background: #12151f;
+      overflow: hidden;
+      display: grid; place-items: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--panel);
+      transition: background 0.15s;
+    }
+    .photo-btn:hover { background: var(--panel-strong); }
+    .modal-footer {
+      padding: 0 20px 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .btn-primary {
+      flex: 1;
+      padding: 13px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 14px;
+      background: var(--accent-grad);
+      color: #0a0b13;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-secondary {
+      padding: 13px 18px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 14px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      transition: background 0.15s;
+    }
+    .btn-secondary:hover { background: var(--panel); color: var(--text); }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(20, 22, 36, 0.95);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      backdrop-filter: blur(16px);
+      z-index: 200;
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      pointer-events: none;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 90;
+      display: none;
+    }
+    .drawer-overlay.show { display: block; }
+    .mobile-drawer {
+      position: fixed;
+      top: 0; left: 0;
+      width: min(300px, 85vw);
+      height: 100%;
+      background: rgba(10, 12, 22, 0.96);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-right: 1px solid var(--line);
+      z-index: 95;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transform: translateX(-105%);
+      transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .mobile-drawer.show { transform: translateX(0); }
+
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main { padding: 16px 14px 100px; }
+      .mobile-profile-btn { display: grid; }
+      .hero { padding: 22px 18px; border-radius: 22px; }
+      .search-form { flex-direction: column; }
+      .btn-search { min-height: 48px; border-radius: 14px; }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .player-controls { flex-direction: column; align-items: stretch; }
+      .ctrl-group { justify-content: center; flex-wrap: wrap; }
+      .hero, .player-section, .video-card, .modal {
+        backdrop-filter: blur(32px);
+        -webkit-backdrop-filter: blur(32px);
+      }
+      .video-card { border-radius: 16px; }
+      .card-body { padding: 10px 11px 12px; }
+      .video-title { font-size: 13px; }
+    }
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 26px; }
+    }
+    @media (min-width: 901px) {
+      .hero, .player-section, .video-card {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+    }
   </style>
 </head>
 <body>
-  <main class="shell">
-    <header>
-      <div class="brand"><span class="logo">♫</span><span>Glass Music</span></div>
-      <div class="top-note">Liquid Glass • Music & video</div>
-    </header>
-
-    <section class="hero">
-      <div class="eyebrow">Your music space</div>
-      <h1>Musiqani izla.</h1>
-      <p class="subtitle">Qo‘shiq yoki ijrochi nomini yozing. Natijalar shu sahifada chiqadi.</p>
-      <form id="searchForm">
-        <input id="query" type="search" placeholder="Masalan: Uzbek pop, Sevara..." autocomplete="off" required>
-        <button id="searchButton" type="submit">Qidirish</button>
-      </form>
-      <div class="status" id="status" role="status">Qidiruvni boshlash uchun nom yozing.</div>
-    </section>
-
-    <section id="playerSection" class="player-panel" aria-live="polite">
-      <p id="playingTitle" class="playing-title"></p>
-      <div class="player-wrap">
-        <iframe id="player" title="Glass Music video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="logo">♫</span>
+        <span>Glass Music</span>
       </div>
-    </section>
 
-    <div class="section-head">
-      <h2>Qidiruv natijalari</h2>
-      <span id="resultCount" class="count">0 ta video</span>
+      <div class="profile-card" id="profileCard">
+        <div class="avatar-wrap">
+          <div class="avatar" id="sidebarAvatar">
+            <span class="avatar-placeholder">👤</span>
+          </div>
+        </div>
+        <div>
+          <div class="profile-name" id="sidebarName">Mehmon</div>
+          <div class="profile-email" id="sidebarEmail">Ro‘yxatdan o‘ting</div>
+        </div>
+        <button class="btn-auth" id="authBtn" type="button">Ro‘yxatdan o‘tish</button>
+        <button class="btn-ghost" id="logoutBtn" type="button" style="display:none">Chiqish</button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Menyu</div>
+        <button class="nav-item active" type="button" data-action="home">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+          Bosh sahifa
+        </button>
+        <button class="nav-item" type="button" data-action="trending">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Trendlar
+        </button>
+        <button class="nav-item" type="button" data-action="recent">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          So‘nggi qidiruvlar
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        Glass Music · Liquid Glass<br>
+        YouTube videolari sahifa ichida
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-title">Musiqa va video</div>
+        <button class="mobile-profile-btn" id="mobileProfileBtn" type="button" aria-label="Profil">
+          <span id="mobileAvatarIcon">👤</span>
+        </button>
+      </div>
+
+      <section class="hero">
+        <div class="eyebrow">Your music space</div>
+        <h1>Musiqani izla.</h1>
+        <p class="subtitle">Qo‘shiq yoki ijrochi nomini yozing. Takliflar pastda chiqadi, natijalar shu sahifada ochiladi.</p>
+
+        <div class="search-wrap">
+          <form class="search-form" id="searchForm" autocomplete="off">
+            <div class="search-input-wrap">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input class="search-input" id="query" type="search" placeholder="Masalan: Mirjalol Nematov, Sevara..." required>
+              <div class="suggestions" id="suggestions" role="listbox"></div>
+            </div>
+            <button class="btn-search" id="searchButton" type="submit">Qidirish</button>
+          </form>
+        </div>
+        <div class="status" id="status" role="status">Qidiruvni boshlash uchun nom yozing.</div>
+      </section>
+
+      <section id="playerSection" class="player-section" aria-live="polite">
+        <div class="player-header">
+          <p id="playingTitle" class="playing-title"></p>
+          <div class="player-actions">
+            <button class="icon-btn" id="closePlayerBtn" type="button" title="Yopish" aria-label="Yopish">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="player-wrap">
+          <div id="player"></div>
+        </div>
+        <div class="player-controls">
+          <div class="ctrl-group">
+            <button class="ctrl-btn" id="prevBtn" type="button" title="Oldingi">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+              Oldingi
+            </button>
+            <button class="ctrl-btn primary" id="playPauseBtn" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" id="playPauseIcon"><path d="M8 5v14l11-7z"/></svg>
+              <span id="playPauseText">Ijro</span>
+            </button>
+            <button class="ctrl-btn" id="nextBtn" type="button" title="Keyingi">
+              Keyingi
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 18h2V6h-2zm-11-6l8.5-6v12z"/></svg>
+            </button>
+          </div>
+          <div class="ctrl-group">
+            <label for="qualitySelect" style="font-size:12px;color:var(--muted)">Sifat:</label>
+            <select class="quality-select" id="qualitySelect" title="Video sifati">
+              <option value="default">Avto</option>
+              <option value="hd1080">1080p</option>
+              <option value="hd720">720p</option>
+              <option value="large">480p</option>
+              <option value="medium">360p</option>
+              <option value="small">240p</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <h2>Qidiruv natijalari</h2>
+        <span id="resultCount" class="count">0 ta video</span>
+      </div>
+      <section id="results" class="grid">
+        <div class="empty">Qidiruv natijalari shu yerda ko‘rinadi.</div>
+      </section>
+    </main>
+  </div>
+
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="mobile-drawer" id="mobileDrawer">
+    <div class="brand">
+      <span class="logo">♫</span>
+      <span>Glass Music</span>
     </div>
-    <section id="results" class="grid">
-      <div class="empty">Qidiruv natijalari shu yerda ko‘rinadi.</div>
-    </section>
-    <footer>Glass Music · YouTube videolari sahifa ichida ijro etiladi</footer>
-  </main>
+    <div class="profile-card">
+      <div class="avatar-wrap">
+        <div class="avatar" id="drawerAvatar">
+          <span class="avatar-placeholder">👤</span>
+        </div>
+      </div>
+      <div>
+        <div class="profile-name" id="drawerName">Mehmon</div>
+        <div class="profile-email" id="drawerEmail">Ro‘yxatdan o‘ting</div>
+      </div>
+      <button class="btn-auth" id="drawerAuthBtn" type="button">Ro‘yxatdan o‘tish</button>
+      <button class="btn-ghost" id="drawerLogoutBtn" type="button" style="display:none">Chiqish</button>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Menyu</div>
+      <button class="nav-item active" type="button" data-action="home">Bosh sahifa</button>
+      <button class="nav-item" type="button" data-action="trending">Trendlar</button>
+      <button class="nav-item" type="button" data-action="recent">So‘nggi qidiruvlar</button>
+    </div>
+  </aside>
+
+  <div class="modal-overlay" id="authModal">
+    <div class="modal" role="dialog" aria-labelledby="authTitle">
+      <div class="modal-header">
+        <h3 id="authTitle">Ro‘yxatdan o‘tish</h3>
+        <button class="modal-close" id="closeAuthModal" type="button" aria-label="Yopish">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="authForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="regName">Ism</label>
+            <input id="regName" type="text" placeholder="Ismingiz" required maxlength="40">
+          </div>
+          <div class="form-group">
+            <label for="regSurname">Familiya</label>
+            <input id="regSurname" type="text" placeholder="Familiyangiz" required maxlength="40">
+          </div>
+          <div class="form-group">
+            <label for="regEmail">Gmail</label>
+            <input id="regEmail" type="email" placeholder="email@gmail.com" required>
+          </div>
+          <div class="form-group">
+            <label>Surat</label>
+            <div class="photo-upload">
+              <div class="photo-preview" id="photoPreview">
+                <span>📷</span>
+              </div>
+              <div>
+                <input type="file" id="regPhoto" accept="image/*" hidden>
+                <button class="photo-btn" type="button" id="pickPhotoBtn">Surat tanlash</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" type="button" id="cancelAuth">Bekor</button>
+          <button class="btn-primary" type="submit">Saqlash</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
   <script>
     "use strict";
+
+    let currentVideos = [];
+    let currentIndex = -1;
+    let ytPlayer = null;
+    let ytReady = false;
+    let suggestTimer = null;
+    let suggestIndex = -1;
+    let photoDataUrl = null;
 
     const searchForm = document.getElementById("searchForm");
     const queryInput = document.getElementById("query");
@@ -126,76 +911,465 @@
     const resultsEl = document.getElementById("results");
     const resultCountEl = document.getElementById("resultCount");
     const playerSection = document.getElementById("playerSection");
-    const player = document.getElementById("player");
     const playingTitle = document.getElementById("playingTitle");
+    const suggestionsEl = document.getElementById("suggestions");
+    const authModal = document.getElementById("authModal");
+    const toastEl = document.getElementById("toast");
 
-    function setStatus(message) {
-      statusEl.textContent = message;
+    const PROFILE_KEY = "glass_music_profile";
+
+    function loadProfile() {
+      try { return JSON.parse(localStorage.getItem(PROFILE_KEY)) || null; }
+      catch { return null; }
     }
 
-    function showEmpty(message) {
-      resultsEl.replaceChildren();
-      const empty = document.createElement("div");
-      empty.className = "empty";
-      empty.textContent = message;
-      resultsEl.appendChild(empty);
+    function saveProfile(data) {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(data));
+      renderProfile();
+    }
+
+    function clearProfile() {
+      localStorage.removeItem(PROFILE_KEY);
+      photoDataUrl = null;
+      renderProfile();
+    }
+
+    function renderProfile() {
+      const p = loadProfile();
+      const nameEl = document.getElementById("sidebarName");
+      const emailEl = document.getElementById("sidebarEmail");
+      const avatarEl = document.getElementById("sidebarAvatar");
+      const authBtn = document.getElementById("authBtn");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const dName = document.getElementById("drawerName");
+      const dEmail = document.getElementById("drawerEmail");
+      const dAvatar = document.getElementById("drawerAvatar");
+      const dAuth = document.getElementById("drawerAuthBtn");
+      const dLogout = document.getElementById("drawerLogoutBtn");
+      const mIcon = document.getElementById("mobileAvatarIcon");
+
+      if (p) {
+        const full = (p.name + " " + p.surname).trim();
+        nameEl.textContent = full;
+        emailEl.textContent = p.email;
+        dName.textContent = full;
+        dEmail.textContent = p.email;
+        authBtn.style.display = "none";
+        logoutBtn.style.display = "block";
+        dAuth.style.display = "none";
+        dLogout.style.display = "block";
+        const imgHtml = p.photo
+          ? `<img src="${p.photo}" alt="">`
+          : `<span class="avatar-placeholder">👤</span>`;
+        avatarEl.innerHTML = imgHtml;
+        dAvatar.innerHTML = imgHtml;
+        mIcon.innerHTML = p.photo
+          ? `<img src="${p.photo}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+          : "👤";
+      } else {
+        nameEl.textContent = "Mehmon";
+        emailEl.textContent = "Ro‘yxatdan o‘ting";
+        dName.textContent = "Mehmon";
+        dEmail.textContent = "Ro‘yxatdan o‘ting";
+        authBtn.style.display = "block";
+        logoutBtn.style.display = "none";
+        dAuth.style.display = "block";
+        dLogout.style.display = "none";
+        avatarEl.innerHTML = `<span class="avatar-placeholder">👤</span>`;
+        dAvatar.innerHTML = `<span class="avatar-placeholder">👤</span>`;
+        mIcon.textContent = "👤";
+      }
+    }
+
+    let toastTimer;
+    function showToast(msg, ms = 2800) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), ms);
+    }
+
+    function openAuthModal() {
+      const p = loadProfile();
+      document.getElementById("regName").value = p?.name || "";
+      document.getElementById("regSurname").value = p?.surname || "";
+      document.getElementById("regEmail").value = p?.email || "";
+      photoDataUrl = p?.photo || null;
+      const preview = document.getElementById("photoPreview");
+      preview.innerHTML = photoDataUrl
+        ? `<img src="${photoDataUrl}" alt="">`
+        : `<span>📷</span>`;
+      authModal.classList.add("show");
+      closeDrawer();
+    }
+
+    function closeAuthModal() {
+      authModal.classList.remove("show");
+    }
+
+    document.getElementById("authBtn").addEventListener("click", openAuthModal);
+    document.getElementById("drawerAuthBtn").addEventListener("click", openAuthModal);
+    document.getElementById("closeAuthModal").addEventListener("click", closeAuthModal);
+    document.getElementById("cancelAuth").addEventListener("click", closeAuthModal);
+    authModal.addEventListener("click", (e) => { if (e.target === authModal) closeAuthModal(); });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      clearProfile();
+      showToast("Chiqildi");
+    });
+    document.getElementById("drawerLogoutBtn").addEventListener("click", () => {
+      clearProfile();
+      showToast("Chiqildi");
+      closeDrawer();
+    });
+
+    document.getElementById("pickPhotoBtn").addEventListener("click", () => {
+      document.getElementById("regPhoto").click();
+    });
+    document.getElementById("regPhoto").addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        showToast("Surat 2 MB dan kichik bo‘lsin");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        photoDataUrl = reader.result;
+        document.getElementById("photoPreview").innerHTML = `<img src="${photoDataUrl}" alt="">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById("authForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("regName").value.trim();
+      const surname = document.getElementById("regSurname").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      if (!name || !surname || !email) {
+        showToast("Barcha maydonlarni to‘ldiring");
+        return;
+      }
+      saveProfile({ name, surname, email, photo: photoDataUrl });
+      closeAuthModal();
+      showToast("Profil saqlandi ✓");
+    });
+
+    const mobileDrawer = document.getElementById("mobileDrawer");
+    const drawerOverlay = document.getElementById("drawerOverlay");
+
+    function openDrawer() {
+      mobileDrawer.classList.add("show");
+      drawerOverlay.classList.add("show");
+    }
+    function closeDrawer() {
+      mobileDrawer.classList.remove("show");
+      drawerOverlay.classList.remove("show");
+    }
+    document.getElementById("mobileProfileBtn").addEventListener("click", openDrawer);
+    drawerOverlay.addEventListener("click", closeDrawer);
+
+    function loadYouTubeAPI() {
+      if (window.YT && window.YT.Player) {
+        ytReady = true;
+        return;
+      }
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+      window.onYouTubeIframeAPIReady = () => {
+        ytReady = true;
+        if (currentIndex >= 0 && currentVideos[currentIndex]) {
+          createOrLoadPlayer(currentVideos[currentIndex].id);
+        }
+      };
+    }
+
+    function createOrLoadPlayer(videoId) {
+      if (!ytReady) {
+        const el = document.getElementById("player");
+        el.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}?autoplay=1&rel=0&enablejsapi=1&playsinline=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:100%;border:0;position:absolute;inset:0"></iframe>`;
+        return;
+      }
+
+      if (ytPlayer && typeof ytPlayer.loadVideoById === "function") {
+        try {
+          ytPlayer.loadVideoById({
+            videoId,
+            suggestedQuality: document.getElementById("qualitySelect").value || "default"
+          });
+        } catch (_) {
+          ytPlayer = null;
+          createOrLoadPlayer(videoId);
+        }
+        return;
+      }
+
+      const container = document.getElementById("player");
+      container.innerHTML = "";
+      ytPlayer = new YT.Player("player", {
+        videoId,
+        width: "100%",
+        height: "100%",
+        playerVars: {
+          autoplay: 1,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          enablejsapi: 1,
+          origin: location.origin
+        },
+        events: {
+          onReady: (e) => {
+            try {
+              const q = document.getElementById("qualitySelect").value;
+              if (q && q !== "default") e.target.setPlaybackQuality(q);
+              e.target.playVideo();
+            } catch (_) {}
+            updatePlayPauseUI(true);
+          },
+          onStateChange: (e) => {
+            if (e.data === 0) playNext();
+            else if (e.data === 1) updatePlayPauseUI(true);
+            else if (e.data === 2) updatePlayPauseUI(false);
+          },
+          onError: () => {
+            showToast("Video yuklanmadi, keyingisiga o‘tilmoqda...");
+            setTimeout(playNext, 800);
+          }
+        }
+      });
+    }
+
+    function updatePlayPauseUI(playing) {
+      const icon = document.getElementById("playPauseIcon");
+      const text = document.getElementById("playPauseText");
+      if (playing) {
+        icon.innerHTML = `<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>`;
+        text.textContent = "Pauza";
+      } else {
+        icon.innerHTML = `<path d="M8 5v14l11-7z"/>`;
+        text.textContent = "Ijro";
+      }
+    }
+
+    function playVideoAt(index) {
+      if (index < 0 || index >= currentVideos.length) return;
+      currentIndex = index;
+      const video = currentVideos[index];
+      playingTitle.textContent = video.title || "Video";
+      playerSection.classList.add("show");
+      playerSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      document.querySelectorAll(".video-card").forEach((c, i) => {
+        c.classList.toggle("playing", i === index);
+      });
+
+      createOrLoadPlayer(video.id);
+    }
+
+    function playNext() {
+      if (currentVideos.length === 0) return;
+      const next = currentIndex + 1;
+      if (next < currentVideos.length) playVideoAt(next);
+      else showToast("Ro‘yxat tugadi");
+    }
+
+    function playPrev() {
+      if (currentIndex > 0) playVideoAt(currentIndex - 1);
+    }
+
+    document.getElementById("nextBtn").addEventListener("click", playNext);
+    document.getElementById("prevBtn").addEventListener("click", playPrev);
+    document.getElementById("playPauseBtn").addEventListener("click", () => {
+      if (!ytPlayer) return;
+      try {
+        const state = ytPlayer.getPlayerState();
+        if (state === 1) ytPlayer.pauseVideo();
+        else ytPlayer.playVideo();
+      } catch (_) {}
+    });
+    document.getElementById("closePlayerBtn").addEventListener("click", () => {
+      if (ytPlayer && typeof ytPlayer.stopVideo === "function") {
+        try { ytPlayer.stopVideo(); } catch (_) {}
+      }
+      document.getElementById("player").innerHTML = "";
+      ytPlayer = null;
+      playerSection.classList.remove("show");
+      currentIndex = -1;
+      document.querySelectorAll(".video-card.playing").forEach(c => c.classList.remove("playing"));
+    });
+
+    document.getElementById("qualitySelect").addEventListener("change", (e) => {
+      const q = e.target.value;
+      if (ytPlayer && typeof ytPlayer.setPlaybackQuality === "function") {
+        try {
+          ytPlayer.setPlaybackQuality(q === "default" ? "default" : q);
+          showToast("Sifat o‘zgartirildi: " + (q === "default" ? "Avto" : q));
+        } catch (_) {
+          showToast("Sifatni o‘zgartirish mumkin emas (YouTube cheklovi)");
+        }
+      }
+    });
+
+    async function fetchSuggestions(q) {
+      if (!q || q.length < 2) {
+        suggestionsEl.classList.remove("show");
+        suggestionsEl.innerHTML = "";
+        return;
+      }
+      try {
+        const url = `https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=${encodeURIComponent(q)}&callback=suggestCallback`;
+        const old = document.getElementById("suggestScript");
+        if (old) old.remove();
+        window.suggestCallback = (data) => {
+          const list = (data && data[1])
+            ? data[1].map(x => (Array.isArray(x) ? x[0] : x)).filter(Boolean)
+            : [];
+          renderSuggestions(list.slice(0, 8));
+        };
+        const s = document.createElement("script");
+        s.id = "suggestScript";
+        s.src = url;
+        s.onerror = () => {
+          const recent = getRecentSearches().filter(r =>
+            r.toLowerCase().includes(q.toLowerCase())
+          );
+          renderSuggestions(recent.slice(0, 6));
+        };
+        document.body.appendChild(s);
+      } catch {
+        suggestionsEl.classList.remove("show");
+      }
+    }
+
+    function renderSuggestions(items) {
+      if (!items.length) {
+        suggestionsEl.classList.remove("show");
+        suggestionsEl.innerHTML = "";
+        return;
+      }
+      suggestionsEl.innerHTML = items.map((text, i) => `
+        <button type="button" class="suggestion-item" role="option" data-index="${i}" data-text="${escapeHtml(text)}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <span>${escapeHtml(text)}</span>
+        </button>
+      `).join("");
+      suggestionsEl.classList.add("show");
+      suggestIndex = -1;
+
+      suggestionsEl.querySelectorAll(".suggestion-item").forEach(btn => {
+        btn.addEventListener("click", () => {
+          queryInput.value = btn.dataset.text;
+          suggestionsEl.classList.remove("show");
+          searchMusic(btn.dataset.text);
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    queryInput.addEventListener("input", () => {
+      clearTimeout(suggestTimer);
+      const q = queryInput.value.trim();
+      suggestTimer = setTimeout(() => fetchSuggestions(q), 220);
+    });
+
+    queryInput.addEventListener("keydown", (e) => {
+      const items = suggestionsEl.querySelectorAll(".suggestion-item");
+      if (!suggestionsEl.classList.contains("show") || !items.length) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        suggestIndex = Math.min(suggestIndex + 1, items.length - 1);
+        items.forEach((el, i) => el.classList.toggle("active", i === suggestIndex));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        suggestIndex = Math.max(suggestIndex - 1, -1);
+        items.forEach((el, i) => el.classList.toggle("active", i === suggestIndex));
+      } else if (e.key === "Enter" && suggestIndex >= 0) {
+        e.preventDefault();
+        items[suggestIndex].click();
+      } else if (e.key === "Escape") {
+        suggestionsEl.classList.remove("show");
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".search-wrap")) {
+        suggestionsEl.classList.remove("show");
+      }
+    });
+
+    const RECENT_KEY = "glass_music_recent";
+    function getRecentSearches() {
+      try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; }
+      catch { return []; }
+    }
+    function addRecentSearch(term) {
+      let list = getRecentSearches().filter(t => t.toLowerCase() !== term.toLowerCase());
+      list.unshift(term);
+      list = list.slice(0, 12);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+    }
+
+    function setStatus(msg) { statusEl.textContent = msg; }
+
+    function showEmpty(msg) {
+      resultsEl.innerHTML = `<div class="empty">${escapeHtml(msg)}</div>`;
       resultCountEl.textContent = "0 ta video";
     }
 
-    function playVideo(video) {
-      if (!video || !video.id) return;
-      playingTitle.textContent = video.title || "Video";
-      // Embed is placed inside this page; do not open YouTube search in another tab.
-      player.src = "https://www.youtube-nocookie.com/embed/" +
-        encodeURIComponent(video.id) + "?autoplay=1&rel=0";
-      playerSection.classList.add("show");
-      playerSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function createVideoCard(video) {
+    function createVideoCard(video, index) {
       const card = document.createElement("article");
       card.className = "video-card";
       card.tabIndex = 0;
       card.setAttribute("role", "button");
       card.setAttribute("aria-label", "Ijro etish: " + (video.title || "Video"));
 
-      const image = document.createElement("img");
-      image.className = "thumb";
-      image.loading = "lazy";
-      image.alt = "";
-      image.src = video.thumbnail || ("https://i.ytimg.com/vi/" +
-        encodeURIComponent(video.id) + "/hqdefault.jpg");
+      const thumbUrl = video.thumbnail ||
+        `https://i.ytimg.com/vi/${encodeURIComponent(video.id)}/hqdefault.jpg`;
 
-      const body = document.createElement("div");
-      body.className = "card-body";
-      const title = document.createElement("div");
-      title.className = "video-title";
-      title.textContent = video.title || "Nomsiz video";
+      card.innerHTML = `
+        <div class="thumb-wrap">
+          <img class="thumb" loading="lazy" alt="" src="${escapeHtml(thumbUrl)}">
+          <div class="play-overlay">
+            <div class="play-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="video-title">${escapeHtml(video.title || "Nomsiz video")}</div>
+          <div class="channel">${escapeHtml(video.channel || "YouTube")}</div>
+        </div>
+      `;
 
-      const channel = document.createElement("div");
-      channel.className = "channel";
-      channel.textContent = video.channel || "YouTube";
-
-      body.append(title, channel);
-      card.append(image, body);
-      card.addEventListener("click", () => playVideo(video));
-      card.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          playVideo(video);
+      const play = () => playVideoAt(index);
+      card.addEventListener("click", play);
+      card.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          play();
         }
       });
       return card;
     }
 
     async function searchMusic(searchTerm) {
-      const term = searchTerm.trim();
+      const term = (searchTerm || "").trim();
       if (!term) {
         setStatus("Iltimos, qidiruv uchun nom yozing.");
         queryInput.focus();
         return;
       }
 
+      suggestionsEl.classList.remove("show");
       searchButton.disabled = true;
       searchButton.textContent = "Qidirilmoqda...";
       setStatus("YouTube’dan natijalar olinmoqda...");
@@ -212,31 +1386,65 @@
           throw new Error("Server javobi noto‘g‘ri formatda.");
         }
 
-        resultsEl.replaceChildren();
-        if (data.videos.length === 0) {
+        currentVideos = data.videos.filter(v => v && v.id);
+        currentIndex = -1;
+
+        resultsEl.innerHTML = "";
+        if (currentVideos.length === 0) {
           showEmpty("Bu so‘rov bo‘yicha video topilmadi.");
           setStatus("Natija topilmadi.");
           return;
         }
 
-        data.videos.forEach((video) => {
-          if (video && video.id) resultsEl.appendChild(createVideoCard(video));
+        currentVideos.forEach((video, i) => {
+          resultsEl.appendChild(createVideoCard(video, i));
         });
-        resultCountEl.textContent = data.videos.length + " ta video";
-        setStatus("Tayyor. Videoni bosib shu sahifada ijro eting.");
+        resultCountEl.textContent = currentVideos.length + " ta video";
+        setStatus("Tayyor. Videoni bosib shu sahifada ijro eting. Tugagach avtomatik keyingisi ochiladi.");
+        addRecentSearch(term);
       } catch (error) {
         showEmpty("Qidiruv amalga oshmadi.");
         setStatus(error.message || "Xatolik yuz berdi. Server va API kalitini tekshiring.");
+        currentVideos = [];
       } finally {
         searchButton.disabled = false;
         searchButton.textContent = "Qidirish";
       }
     }
 
-    searchForm.addEventListener("submit", (event) => {
-      event.preventDefault();
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
       searchMusic(queryInput.value);
     });
+
+    document.querySelectorAll("[data-action]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const action = btn.dataset.action;
+        document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+        btn.classList.add("active");
+        closeDrawer();
+
+        if (action === "trending") {
+          queryInput.value = "Uzbek music 2025";
+          searchMusic("Uzbek music 2025");
+        } else if (action === "recent") {
+          const recent = getRecentSearches();
+          if (recent.length) {
+            renderSuggestions(recent);
+            suggestionsEl.classList.add("show");
+            queryInput.focus();
+            setStatus("So‘nggi qidiruvlaringiz — birini tanlang.");
+          } else {
+            showToast("Hali qidiruv tarixi yo‘q");
+          }
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
+    });
+
+    loadYouTubeAPI();
+    renderProfile();
   </script>
 </body>
 </html>
