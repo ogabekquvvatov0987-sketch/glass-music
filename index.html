@@ -200,15 +200,43 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
   .hero{padding:16px 14px;border-radius:20px}
   .sfm{flex-direction:column}
   .btn.pri{min-height:48px;width:100%}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
   .vc{border-radius:14px}
   /* lighter blur on mobile = less freeze */
   .hero,.ps,.vc,.panel,.md{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
 }
 @media(max-width:380px){
-  .grid{grid-template-columns:1fr}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
   h1{font-size:20px}
+  .vt{font-size:10px}
+  .card-stats{font-size:9px}
 }
+
+/* comments sheet */
+.cmt-sheet{position:fixed;left:0;right:0;bottom:0;z-index:130;max-height:55dvh;
+  background:rgba(14,16,26,.97);backdrop-filter:blur(20px);
+  border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:0;
+  transform:translateY(110%);transition:transform .3s cubic-bezier(.32,.72,0,1);
+  display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}
+.cmt-sheet.on{transform:translateY(0)}
+.cmt-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line2)}
+.cmt-hd h4{font-size:14px;font-weight:700}
+.cmt-list{overflow-y:auto;flex:1;padding:10px 12px;-webkit-overflow-scrolling:touch}
+.cmt-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2)}
+.cmt-item:last-child{border-bottom:0}
+.cmt-av{width:32px;height:32px;border-radius:50%;object-fit:cover;background:#222;flex-shrink:0}
+.cmt-body{flex:1;min-width:0}
+.cmt-author{font-size:12px;font-weight:700;margin-bottom:2px}
+.cmt-text{font-size:12px;line-height:1.4;color:var(--t);opacity:.92;word-break:break-word}
+.cmt-meta{font-size:10px;color:var(--m);margin-top:3px}
+.btn{transition:transform .18s cubic-bezier(.32,.72,0,1),box-shadow .2s,background .2s}
+.btn:hover{transform:translateY(-1px)}
+.vc{transition:transform .22s cubic-bezier(.32,.72,0,1),box-shadow .22s,border-color .2s}
+.vc:hover{box-shadow:0 10px 28px rgba(0,0,0,.35)}
+.si{transition:border-color .2s,box-shadow .2s,background .2s}
+.panel{transition:transform .32s cubic-bezier(.32,.72,0,1)}
+.sug{animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
@@ -251,7 +279,7 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
       <form class="sfm" id="form" autocomplete="off">
         <div class="siw">
           <svg class="sic" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input class="si" id="q" type="search" placeholder="Masalan: Mirjalol..." required enterkeyhint="search">
+          <input class="si" id="q" type="search" placeholder="" enterkeyhint="search">
           <div class="sug" id="sug" role="listbox"></div>
         </div>
         <button class="btn pri" id="btnS" type="submit">Qidirish</button>
@@ -284,9 +312,6 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
   </div>
   <button class="pi" type="button" data-a="home">🏠 Bosh sahifa</button>
   <button class="pi" type="button" data-a="shorts">▶ Shorts</button>
-  <button class="pi" type="button" data-a="likes">♥ Yoqtirganlar</button>
-  <button class="pi" type="button" data-a="hist">⏱ Tarix</button>
-  <button class="pi" type="button" data-a="auth">👤 Hisob</button>
 </aside>
 
 <div class="mo" id="authM">
@@ -301,7 +326,6 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
         <div class="fg"><label>Familiya</label><input id="sn" maxlength="40" autocomplete="family-name"></div>
         <div class="fg"><label>Gmail</label><input id="em" type="email" required autocomplete="email"></div>
         <div class="mf">
-          <button class="btn" type="button" id="btnCA">Bekor</button>
           <button class="btn pri" type="submit" style="flex:1">Saqlash</button>
         </div>
       </form>
@@ -318,12 +342,16 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
   <div class="rfeed" id="rfeed"></div>
 </div>
 
+<div class="cmt-sheet" id="cmtSheet">
+  <div class="cmt-hd"><h4 id="cmtTitle">Izohlar</h4><button class="btn ic" type="button" id="btnXC">✕</button></div>
+  <div class="cmt-list" id="cmtList"><div class="empty" style="border:0">Yuklanmoqda...</div></div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
 "use strict";
 /* Google Client ID ni shu yerga yozing */
-const GCI = "https://182398437833-nnstoi5ol6rilirai26cdno8n4911v97.apps.googleusercontent.com";
+const GCI = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
 let videos=[], idx=-1, nextTok="", qCur="", mode="video";
 let yt=null, ytOk=false, more=false, liked=new Set();
@@ -419,7 +447,7 @@ function openAuth(){
 }
 function closeAuth(){$("authM").classList.remove("on")}
 $("btnAuth").onclick=openAuth;$("btnUser").onclick=openAuth;
-$("btnXA").onclick=closeAuth;$("btnCA").onclick=closeAuth;
+$("btnXA").onclick=closeAuth;
 $("authM").onclick=e=>{if(e.target===$("authM"))closeAuth()};
 $("btnOut").onclick=()=>{clearP();toast("Chiqildi")};
 $("authF").onsubmit=e=>{
@@ -507,7 +535,7 @@ function showSug(items){
     b.onclick=()=>{qi.value=b.dataset.t;sug.classList.remove("on");search(b.dataset.t,false)};
   });
 }
-qi.addEventListener("input",()=>{clearTimeout(sugT);const v=qi.value.trim();sugT=setTimeout(()=>fetchSug(v),180)});
+qi.addEventListener("input",()=>{clearTimeout(sugT);const v=qi.value.trim();sugT=setTimeout(()=>fetchSug(v),140)});
 qi.addEventListener("focus",()=>{if(qi.value.trim().length>=1)fetchSug(qi.value.trim())});
 document.addEventListener("click",e=>{if(!e.target.closest(".sw"))sug.classList.remove("on")});
 
@@ -575,7 +603,7 @@ async function search(term,append){
   }finally{$("btnS").disabled=false;$("btnS").textContent="Qidirish";more=false}
 }
 async function loadMore(){if(!nextTok||more||!qCur)return;more=true;const b=$("more");if(b){b.disabled=true;b.textContent="..."}await search(qCur,true)}
-form.onsubmit=e=>{e.preventDefault();mode="video";$("rTitle").textContent="Videolar";search(qi.value,false)};
+form.onsubmit=e=>{e.preventDefault();mode="video";$("rTitle").textContent="Videolar";const t=qi.value.trim();if(!t){status.textContent="Nom yozing";qi.focus();return}search(t,false)};
 
 /* Shorts reels — faqat ko'rinadigan iframe */
 function openReels(list,start){
@@ -602,7 +630,7 @@ function openReels(list,start){
     reel.querySelector("[data-lk]").onclick=async e=>{
       const ok=await toggleLike(v);e.currentTarget.classList.toggle("on",ok);e.currentTarget.textContent=ok?"♥":"♡";
     };
-    reel.querySelector("[data-cmt]").onclick=()=>toast("Izohlar: "+fmtN(v.comments));
+    reel.querySelector("[data-cmt]").onclick=()=>openComments(v);
     reel.querySelector("[data-sh]").onclick=()=>shareV(v);
     reel.querySelector("[data-rep]").onclick=()=>toast("Ko‘rishlar: "+fmtN(v.views));
     feed.appendChild(reel);
@@ -616,7 +644,7 @@ function openReels(list,start){
         reelI=i;
         if(host && !host.querySelector("iframe")){
           const v=reelList[i];
-          host.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&playsinline=1&rel=0&modestbranding=1" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen></iframe>`;
+          host.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.id)}?autoplay=1&playsinline=1&rel=0&modestbranding=1&controls=0&fs=0&disablekb=1&iv_load_policy=3" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen style="pointer-events:none"></iframe>`;
         }
       }else if(host){host.innerHTML=""}
     });
@@ -624,7 +652,24 @@ function openReels(list,start){
   feed.querySelectorAll(".reel").forEach(r=>reelObs.observe(r));
   setTimeout(()=>{const el=feed.querySelectorAll(".reel")[reelI];if(el)el.scrollIntoView()},30);
 }
-function closeReels(){
+async function openComments(v){
+  const sheet=$("cmtSheet"), list=$("cmtList");
+  $("cmtTitle").textContent="Izohlar · "+fmtN(v.comments||0);
+  list.innerHTML=`<div class="empty" style="border:0">Yuklanmoqda...</div>`;
+  sheet.classList.add("on");
+  try{
+    const d=await(await fetch("/api/comments?id="+encodeURIComponent(v.id))).json();
+    const items=d.comments||[];
+    if(!items.length){list.innerHTML=`<div class="empty" style="border:0">Izoh yo‘q yoki o‘chirilgan</div>`;return}
+    list.innerHTML=items.map(c=>`<div class="cmt-item">
+      ${c.photo?`<img class="cmt-av" src="${esc(c.photo)}" alt="">`:`<div class="cmt-av" style="display:grid;place-items:center;font-size:12px">👤</div>`}
+      <div class="cmt-body"><div class="cmt-author">${esc(c.author)}</div>
+      <div class="cmt-text">${esc(c.text)}</div>
+      <div class="cmt-meta">♥ ${fmtN(c.likes)}</div></div></div>`).join("");
+  }catch(e){list.innerHTML=`<div class="empty" style="border:0">Izohlarni olishda xato</div>`}
+}
+function closeComments(){$("cmtSheet").classList.remove("on")}
+function closeReels(){closeComments();
   $("reels").classList.remove("on");document.body.style.overflow="";
   $("rfeed").innerHTML="";if(reelObs){try{reelObs.disconnect()}catch{}}reelObs=null;reelList=[];
 }
@@ -651,6 +696,7 @@ window.addEventListener("scroll",()=>{
   requestAnimationFrame(()=>{tick=false;if(nextTok&&!more&&window.innerHeight+window.scrollY>=document.body.offsetHeight-600)loadMore()});
 },{passive:true});
 
+$("btnXC")&&($("btnXC").onclick=closeComments);
 loadYT();renderP();
 search("Uzbek music 2025",false);
 </script>

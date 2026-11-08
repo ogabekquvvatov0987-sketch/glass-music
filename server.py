@@ -8,6 +8,7 @@ from urllib.error import HTTPError, URLError
 
 HOST, PORT = "0.0.0.0", int(os.environ.get("PORT", "8080"))
 API_KEY = os.environ.get("YOUTUBE_API_KEY", "").strip()
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "").strip()
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "glass_music.db")
 
 def db():
@@ -113,7 +114,38 @@ class H(SimpleHTTPRequestHandler):
             self.handle_get_history(qs.get("email",[""])[0]); return
         if path == "/api/likes":
             self.handle_get_likes(qs.get("email",[""])[0]); return
-        if path in ("/", ""): self.path = "/index.html"
+        if path == "/api/comments":
+            self.handle_comments(qs.get("id",[""])[0]); return
+        if path in ("/", ""):
+            file_path = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "index.html"
+            )
+
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    page = f.read()
+
+                page = page.replace(
+                    "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+                    GOOGLE_CLIENT_ID
+                )
+
+                body = page.encode("utf-8")
+                self.send_response(200)
+                self.send_header(
+                    "Content-Type",
+                    "text/html; charset=utf-8"
+                )
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
+
+            except Exception:
+                self.send_error(500, "Sahifa yuklanmadi")
+                return
+
         return super().do_GET()
 
     def do_POST(self):
@@ -256,6 +288,33 @@ class H(SimpleHTTPRequestHandler):
         c.execute("SELECT video_id as id, title, channel, thumbnail FROM likes WHERE user_email=? ORDER BY created_at DESC", (email,))
         rows = [dict(r) for r in c.fetchall()]; conn.close()
         self.send_json(200, {"likes": rows})
+
+
+    def handle_comments(self, video_id):
+        video_id = (video_id or "").strip()
+        if not video_id:
+            self.send_json(400, {"error": "id kerak"}); return
+        if not API_KEY:
+            self.send_json(500, {"error": "API key"}); return
+        url = (
+            "https://www.googleapis.com/youtube/v3/commentThreads"
+            "?part=snippet&order=relevance&maxResults=20&textFormat=plainText"
+            "&videoId=" + quote(video_id) + "&key=" + quote(API_KEY)
+        )
+        try:
+            payload = yt_get(url)
+        except Exception as e:
+            self.send_json(200, {"comments": [], "error": str(e)}); return
+        comments = []
+        for item in payload.get("items", []):
+            sn = item.get("snippet", {}).get("topLevelComment", {}).get("snippet", {})
+            comments.append({
+                "author": clean_title(sn.get("authorDisplayName", "User")),
+                "text": clean_title(sn.get("textDisplay", "")),
+                "likes": int(sn.get("likeCount") or 0),
+                "photo": sn.get("authorProfileImageUrl", ""),
+            })
+        self.send_json(200, {"comments": comments})
 
     def send_json(self, status, data):
         body = json.dumps(data, ensure_ascii=False).encode("utf-8")
