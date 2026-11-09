@@ -41,12 +41,13 @@ img{max-width:100%;display:block}
   background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.04));
   backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
   box-shadow:0 4px 14px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);
-  transition:transform .18s cubic-bezier(.32,.72,0,1),box-shadow .2s,opacity .15s;color:var(--t);
+  transition:transform .22s cubic-bezier(.32,.72,0,1),box-shadow .25s,opacity .15s,border-color .2s,filter .2s;color:var(--t);
 }
-.btn:hover{transform:translateY(-1px)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.28);border-color:rgba(255,255,255,.28)}
 .btn:active{transform:scale(.96)}
-.btn:disabled{opacity:.5}
+.btn:disabled{opacity:.5;pointer-events:none}
 .btn.pri{background:var(--g);color:#0a0b13;border:0;box-shadow:0 6px 20px rgba(139,92,246,.3),inset 0 1px 0 rgba(255,255,255,.4)}
+.btn.pri:hover{filter:brightness(1.08);box-shadow:0 10px 28px rgba(139,92,246,.45),inset 0 1px 0 rgba(255,255,255,.5);transform:translateY(-2px)}
 .btn.ic{width:44px;height:44px;min-height:44px;padding:0;border-radius:50%}
 
 /* ---------- tuzilma ---------- */
@@ -73,8 +74,9 @@ img{max-width:100%;display:block}
 
 .navl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--m);padding:0 6px 6px;font-weight:600}
 .navb{display:flex;flex-direction:column;gap:2px}
-.ni{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:14px;font-size:13px;font-weight:500;color:var(--m);width:100%;text-align:left}
-.ni:hover,.ni.on{background:var(--p2);color:var(--t)}
+.ni{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:14px;font-size:13px;font-weight:500;color:var(--m);width:100%;text-align:left;transition:background .2s,color .2s,transform .18s}
+.ni:hover{background:var(--p2);color:var(--t);transform:translateX(3px)}
+.ni.on{background:var(--p2);color:var(--t)}
 
 /* sozlamalar (kalit) */
 .sets{display:flex;flex-direction:column;gap:6px}
@@ -157,13 +159,19 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
 .vc{
   border:1px solid var(--line);border-radius:16px;background:var(--p);overflow:hidden;min-width:0;
-  cursor:pointer;transition:transform .22s cubic-bezier(.32,.72,0,1),box-shadow .22s,border-color .2s;
+  cursor:pointer;transition:transform .28s cubic-bezier(.32,.72,0,1),box-shadow .28s,border-color .25s;
 }
-.vc:hover{box-shadow:0 10px 28px rgba(0,0,0,.35)}
+.vc:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 16px 36px rgba(0,0,0,.42),0 0 0 1px rgba(180,160,255,.25);border-color:rgba(180,160,255,.45)}
 .vc:active{transform:scale(.98)}
-.vc.play{border-color:rgba(180,160,255,.7)}
+.vc.play{border-color:rgba(180,160,255,.75);box-shadow:0 0 0 1px rgba(180,160,255,.35),0 8px 24px rgba(139,92,246,.2)}
 .tw{position:relative;aspect-ratio:16/9;background:#12151f;overflow:hidden}
-.th{width:100%;height:100%;object-fit:cover}
+.th{width:100%;height:100%;object-fit:cover;transition:transform .45s cubic-bezier(.32,.72,0,1)}
+.vc:hover .th{transform:scale(1.08)}
+.tw::after{
+  content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.35),transparent 45%);
+  opacity:0;transition:opacity .3s;pointer-events:none
+}
+.vc:hover .tw::after{opacity:1}
 .cb{padding:9px 10px 11px;min-width:0}
 .vt{font-size:12px;font-weight:650;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
 .chrow-card{display:flex;align-items:center;gap:7px;margin-top:6px;min-width:0}
@@ -172,8 +180,10 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 .card-stats{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:10px;color:var(--m)}
 .card-stats span{display:inline-flex;align-items:center;gap:3px}
 .ca{display:flex;flex-direction:row;gap:6px;margin-top:8px;align-items:center}
-.sb{flex:1;min-width:0;min-height:34px;padding:6px 8px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid var(--line2);background:rgba(255,255,255,.06);color:var(--m);white-space:nowrap}
+.sb{flex:1;min-width:0;min-height:34px;padding:6px 8px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid var(--line2);background:rgba(255,255,255,.06);color:var(--m);white-space:nowrap;transition:transform .18s,background .2s,color .2s,border-color .2s}
+.sb:hover{background:rgba(255,255,255,.12);color:var(--t);transform:scale(1.04)}
 .sb.liked{color:#f472b6;border-color:rgba(244,114,182,.35)}
+.sb.liked:hover{background:rgba(244,114,182,.12)}
 .empty{grid-column:1/-1;padding:28px 14px;text-align:center;color:var(--m);border:1px dashed var(--line);border-radius:16px;font-size:13px;line-height:1.5}
 .lm{grid-column:1/-1;display:flex;justify-content:center;padding:10px 0}
 
@@ -263,6 +273,48 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:rgba(18,20,32,.96);border:1px solid var(--line);border-radius:999px;padding:10px 16px;font-size:12px;z-index:200;opacity:0;transition:.25s;pointer-events:none;max-width:88vw;text-align:center}
 .toast.on{transform:translateX(-50%);opacity:1}
 
+/* ---------- splash / hush kelibsiz ---------- */
+.splash{
+  position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 40%,rgba(139,92,246,.35),transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 70%,rgba(14,165,233,.2),transparent 50%),
+    #080a12;
+  transition:opacity .7s ease,visibility .7s;
+}
+.splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.splash-logo{
+  width:88px;height:88px;border-radius:24px;display:grid;place-items:center;
+  background:var(--g);color:#0a0b13;font-size:40px;
+  box-shadow:0 12px 40px rgba(139,92,246,.45),0 0 0 1px rgba(255,255,255,.15);
+  animation:splashPop .9s cubic-bezier(.22,1.2,.36,1) both;
+}
+.splash-title{
+  margin-top:22px;font-size:clamp(22px,6vw,32px);font-weight:800;letter-spacing:-.5px;
+  background:var(--g);-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:splashFade .8s .25s ease both;
+}
+.splash-sub{
+  margin-top:8px;font-size:14px;color:var(--m);animation:splashFade .8s .4s ease both;
+}
+.splash-bar{
+  margin-top:28px;width:120px;height:3px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;
+  animation:splashFade .6s .5s ease both;
+}
+.splash-bar i{
+  display:block;height:100%;width:0;border-radius:99px;background:var(--g);
+  animation:splashLoad 1.4s .55s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes splashPop{
+  from{opacity:0;transform:scale(.55) rotate(-8deg)}
+  to{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes splashFade{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:none}
+}
+@keyframes splashLoad{to{width:100%}}
+
 /* izohlar */
 .cmt-sheet{position:fixed;left:0;right:0;bottom:0;z-index:130;max-height:55dvh;
   background:rgba(14,16,26,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -304,6 +356,12 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 </style>
 </head>
 <body>
+<div class="splash" id="splash" aria-hidden="false">
+  <div class="splash-logo">♫</div>
+  <div class="splash-title">Glass Music</div>
+  <div class="splash-sub">Hush kelibsiz</div>
+  <div class="splash-bar"><i></i></div>
+</div>
 <div class="app">
 
 <aside class="side">
@@ -374,10 +432,6 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
       <button class="btn" id="btnPrev" type="button" aria-label="Oldingi">⏮</button>
       <button class="btn pri" id="btnPP" type="button" aria-label="Ijro / pauza"><span id="ppT">▶</span></button>
       <button class="btn" id="btnNext" type="button" aria-label="Keyingi">⏭</button>
-      <select class="qs" id="qual" aria-label="Sifat">
-        <option value="default">Avto</option><option value="hd720">720p</option>
-        <option value="large">480p</option><option value="medium">360p</option>
-      </select>
     </div>
   </section>
 
@@ -648,23 +702,37 @@ function embedSrc(id, autoP){
 function iframeFor(id, autoP){
   return `<iframe src="${embedSrc(id, autoP)}" allow="autoplay;encrypted-media;picture-in-picture" allowfullscreen title="Video"></iframe>`;
 }
+let nextTimer = null;
 function destroyPlayer(){
-  try{ yt && yt.destroy && yt.destroy() }catch{}
+  if(nextTimer){ clearTimeout(nextTimer); nextTimer = null }
+  try{
+    if(yt){
+      try{ yt.stopVideo && yt.stopVideo() }catch{}
+      try{ yt.destroy && yt.destroy() }catch{}
+    }
+  }catch{}
   yt = null;
-  $("pw").innerHTML = "";
+  const pw = $("pw");
+  if(pw) pw.innerHTML = "";
 }
 function onPState(e){
   const pp = $("ppT");
+  if(!pp) return;
   if(e.data === 1) pp.textContent = "⏸";
   else if(e.data === 0){
     pp.textContent = "▶";
-    if(getSet().autoNext) playNext();
+    if(getSet().autoNext){
+      if(nextTimer) clearTimeout(nextTimer);
+      nextTimer = setTimeout(() => { nextTimer = null; playNext(); }, 400);
+    }
   } else if(e.data === 2) pp.textContent = "▶";
 }
 function playAt(i){
   if(i < 0 || i >= videos.length) return;
+  if(nextTimer){ clearTimeout(nextTimer); nextTimer = null }
   idx = i;
   const v = videos[i];
+  if(!v || !v.id) return;
   const autoP = getSet().autoPlay;
   pTitle.textContent = clean(v.title) || "Video";
   setAmbient(v.thumbnail);
@@ -685,7 +753,13 @@ function playAt(i){
                      iv_load_policy: 3, origin: location.origin},
         events: {
           onStateChange: onPState,
-          onError: () => { toast("Video ochilmadi"); if(getSet().autoNext) setTimeout(playNext, 800) }
+          onError: () => {
+            toast("Video ochilmadi");
+            if(getSet().autoNext){
+              if(nextTimer) clearTimeout(nextTimer);
+              nextTimer = setTimeout(() => { nextTimer = null; playNext(); }, 800);
+            }
+          }
         }
       });
     }catch{
@@ -706,9 +780,12 @@ function ms(v){
     });
     navigator.mediaSession.setActionHandler("nexttrack", () => playNext());
     navigator.mediaSession.setActionHandler("previoustrack", () => { if(idx > 0) playAt(idx - 1) });
+    navigator.mediaSession.setActionHandler("play", () => { try{ yt && yt.playVideo() }catch{} });
+    navigator.mediaSession.setActionHandler("pause", () => { try{ yt && yt.pauseVideo() }catch{} });
   }catch{}
 }
 async function playNext(){
+  if(mode === "shorts") return;
   if(idx + 1 < videos.length){ playAt(idx + 1); return }
   if(nextTok){
     const ok = await loadMore();
@@ -716,16 +793,19 @@ async function playNext(){
   }
   toast("Ro‘yxat tugadi");
 }
-$("btnNext").onclick = playNext;
+$("btnNext").onclick = () => playNext();
 $("btnPrev").onclick = () => { if(idx > 0) playAt(idx - 1) };
 $("btnPP").onclick = () => {
-  try{ const s = yt.getPlayerState(); s === 1 ? yt.pauseVideo() : yt.playVideo() }catch{}
+  try{
+    if(!yt) return;
+    const s = yt.getPlayerState();
+    s === 1 ? yt.pauseVideo() : yt.playVideo();
+  }catch{}
 };
 $("btnXP").onclick = () => {
   destroyPlayer(); pSec.classList.remove("on"); idx = -1;
   document.querySelectorAll(".vc.play").forEach(c => c.classList.remove("play"));
 };
-$("qual").onchange = e => { try{ yt?.setPlaybackQuality?.(e.target.value) }catch{} };
 
 function shareV(v){
   const u = "https://www.youtube.com/watch?v=" + v.id;
@@ -859,8 +939,12 @@ async function fetchVideos(append){
     videos = append ? videos.concat(list) : list;
     nextTok = d.nextPageToken || "";
     render(append);
-    status.textContent = d.stale ? "Kesh ma’lumoti (YouTube limiti)"
-                                 : (videos.length ? "Tayyor" : "Topilmadi");
+    if(d.stale){
+      status.textContent = "Keshdan (API limit/xato) — " + (videos.length ? videos.length + " ta" : "bo‘sh");
+      toast("YouTube limiti: keshdagi natijalar ko‘rsatildi", 3200);
+    } else {
+      status.textContent = videos.length ? "Tayyor" : "Topilmadi";
+    }
     ok = list.length > 0;
   }catch(e){
     if(!append){
@@ -1080,12 +1164,35 @@ function act(a){
   }
   if(a === "likes"){ showLikes(); return }
   if(a === "hist"){
-    const r = recent();
-    if(!r.length){ toast("Tarix bo‘sh"); return }
     setActive("hist");
     status.textContent = "Tarix";
-    showSug(r);
-    qi.focus();
+    const local = recent();
+    const p = profile();
+    if(p?.email){
+      fetch("/api/history?email=" + encodeURIComponent(p.email))
+        .then(r => r.json())
+        .then(d => {
+          const server = d.history || [];
+          const merged = [];
+          const seen = new Set();
+          [...server, ...local].forEach(q => {
+            const k = (q || "").toLowerCase();
+            if(k && !seen.has(k)){ seen.add(k); merged.push(q) }
+          });
+          if(!merged.length){ toast("Tarix bo‘sh"); return }
+          showSug(merged.slice(0, 12));
+          qi.focus();
+        })
+        .catch(() => {
+          if(!local.length){ toast("Tarix bo‘sh"); return }
+          showSug(local);
+          qi.focus();
+        });
+    } else {
+      if(!local.length){ toast("Tarix bo‘sh"); return }
+      showSug(local);
+      qi.focus();
+    }
     return;
   }
   if(a === "auth") openAuth();
@@ -1094,16 +1201,36 @@ document.querySelectorAll("[data-a]").forEach(b => b.onclick = () => act(b.datas
 
 /* keyingi sahifa: pastga tushganda avtomatik yuklash */
 window.addEventListener("scroll", () => {
-  if(!nextTok || more) return;
+  if(!nextTok || more || mode === "shorts") return;
   if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 600) loadMore();
 }, {passive: true});
 
+/* sahifadan chiqishda pleyerni tozalash — crash/qotishni kamaytiradi */
+window.addEventListener("pagehide", () => { destroyPlayer(); closeReels() });
+document.addEventListener("visibilitychange", () => {
+  if(document.hidden){
+    try{ yt && yt.pauseVideo && yt.pauseVideo() }catch{}
+  }
+});
+
 /* ---------- ishga tushirish ---------- */
+function hideSplash(){
+  const el = $("splash");
+  if(!el) return;
+  el.classList.add("hide");
+  el.setAttribute("aria-hidden", "true");
+  setTimeout(() => { try{ el.remove() }catch{} }, 800);
+}
 renderP();
 renderSettings();
 loadYT();
 if(profile()) loadLikes();
-fetchVideos(false);
+fetchVideos(false).finally(() => {
+  // minimal 1.6s logo ko‘rinsin, keyin yopilsin
+  setTimeout(hideSplash, 1600);
+});
+// agar qidiruv uzoq cho‘zilsa ham splash yopilsin
+setTimeout(hideSplash, 3200);
 </script>
 </body>
 </html>

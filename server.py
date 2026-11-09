@@ -19,7 +19,7 @@ INDEX_PATH = os.path.join(BASE_DIR, "index.html")
 MAX_BODY = 4 * 1024 * 1024       # so‘rov hajmi chegarasi (rasm uchun)
 SEARCH_TTL = 6 * 3600            # qidiruv natijasi 6 soat yangi hisoblanadi
 COMMENTS_TTL = 3 * 3600          # izohlar 3 soat
-STALE_MAX = 3 * 86400            # limit tugasa, shu muddatgacha eski kesh beriladi
+STALE_MAX = 14 * 86400           # API xato/limitda 14 kungacha eski kesh ko‘rsatiladi
 KEY_COOLDOWN = 6 * 3600          # limitga urilgan kalit shuncha vaqt "dam oladi"
 
 QUOTA_REASONS = {"quotaExceeded", "dailyLimitExceeded", "rateLimitExceeded", "userRateLimitExceeded"}
@@ -287,14 +287,28 @@ class H(BaseHTTPRequestHandler):
         if cached is not None and age <= SEARCH_TTL:
             return self.send_json(200, cached)
 
+        def serve_stale(reason=""):
+            if cached is not None and age is not None and age <= STALE_MAX:
+                out = {**cached, "stale": True}
+                if reason:
+                    out["staleReason"] = reason
+                return self.send_json(200, out)
+            return None
+
         try:
             payload = yt_api("search", params)
         except QuotaError:
-            if cached is not None and age <= STALE_MAX:
-                return self.send_json(200, {**cached, "stale": True})
+            if serve_stale("quota") is not None:
+                return
             return self.send_json(429, {"error": QUOTA_MSG})
         except ApiError as e:
+            if serve_stale("api") is not None:
+                return
             return self.send_json(e.status, {"error": e.message})
+        except Exception:
+            if serve_stale("network") is not None:
+                return
+            return self.send_json(502, {"error": "YouTube bilan aloqa yo‘q. Internetni tekshiring."})
 
         videos = []
         for item in payload.get("items", []):
@@ -337,10 +351,16 @@ class H(BaseHTTPRequestHandler):
             payload = yt_api("commentThreads", params)
         except QuotaError:
             if cached is not None:
-                return self.send_json(200, cached)
+                return self.send_json(200, {**cached, "stale": True})
             return self.send_json(200, {"comments": [], "error": QUOTA_MSG})
         except ApiError as e:
+            if cached is not None:
+                return self.send_json(200, {**cached, "stale": True})
             return self.send_json(200, {"comments": [], "error": e.message})
+        except Exception:
+            if cached is not None:
+                return self.send_json(200, {**cached, "stale": True})
+            return self.send_json(200, {"comments": [], "error": "Izohlarni olishda xato"})
 
         items = []
         for item in payload.get("items", []):
