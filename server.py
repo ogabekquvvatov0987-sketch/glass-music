@@ -24,8 +24,10 @@ KEY_COOLDOWN = 6 * 3600          # limitga urilgan kalit shuncha vaqt "dam oladi
 
 QUOTA_REASONS = {"quotaExceeded", "dailyLimitExceeded", "rateLimitExceeded", "userRateLimitExceeded"}
 KEY_REASONS = {"keyInvalid", "accessNotConfigured", "keyExpired", "ipRefererBlocked"}
-QUOTA_MSG = ("Bugungi YouTube qidiruv limiti tugadi. Ertaga qayta urinib ko‘ring "
-             "yoki serverga qo‘shimcha YOUTUBE_API_KEY kiriting.")
+# Foydalanuvchiga texnik limit xabari ko‘rsatilmaydi — do‘stona matn
+FRIENDLY_ERR = ("Server xatosi. Iltimos, tizimda yangilanish ketmoqda. "
+                "Tez orada hammasi yaxshilanadi.")
+QUOTA_MSG = FRIENDLY_ERR
 
 SHORT_SEEDS = [
     "shorts viral", "funny shorts", "music shorts", "dance shorts",
@@ -125,31 +127,40 @@ def uz_error(reason, msg):
         return "Bu video uchun izohlar o‘chirilgan."
     if reason == "videoNotFound":
         return "Video topilmadi."
-    return "YouTube xatosi: " + (msg or reason or "noma'lum")
+    # Foydalanuvchiga texnik xabar bermaymiz
+    return FRIENDLY_ERR
 
 
 def yt_api(endpoint, params):
-    """YouTube API ga so‘rov. Kalit limitga urilsa, keyingi kalit bilan qayta urinadi."""
+    """YouTube API. Bir kalit limitga urilsa, avtomatik keyingisini sinaydi."""
     if not API_KEYS:
-        raise ApiError(500, "YOUTUBE_API_KEY sozlanmagan.")
+        raise ApiError(500, FRIENDLY_ERR)
     now = time.time()
     with dead_lock:
+        # Avval "tirik" kalitlar, keyin cooldown tugaganlar, oxirida hammasi
         alive = [k for k in API_KEYS if dead_keys.get(k, 0) < now]
-    if not alive:
-        raise QuotaError()
+        if not alive:
+            # Barcha dam olgan bo‘lsa ham bir marta urinib ko‘ramiz (cooldownni e'tiborsiz)
+            alive = list(API_KEYS)
+    last_exc = None
     for key in alive:
         url = "https://www.googleapis.com/youtube/v3/" + endpoint + "?" + urlencode({**params, "key": key})
         try:
             return yt_get(url)
         except HTTPError as exc:
             reason, msg = google_error(exc)
+            last_exc = exc
             if reason in QUOTA_REASONS or exc.code == 429 or reason in KEY_REASONS:
                 with dead_lock:
                     dead_keys[key] = time.time() + KEY_COOLDOWN
-                continue
-            raise ApiError(exc.code if 400 <= exc.code < 600 else 502, uz_error(reason, msg))
-        except (URLError, OSError):
-            raise ApiError(502, "YouTube bilan aloqa yo‘q. Internetni tekshiring.")
+                continue  # keyingi kalit
+            # Boshqa xato — ham keyingi kalitni sinab ko‘ramiz
+            with dead_lock:
+                dead_keys[key] = time.time() + min(KEY_COOLDOWN, 1800)
+            continue
+        except (URLError, OSError) as exc:
+            last_exc = exc
+            continue  # keyingi kalit
     raise QuotaError()
 
 
@@ -300,15 +311,15 @@ class H(BaseHTTPRequestHandler):
         except QuotaError:
             if serve_stale("quota") is not None:
                 return
-            return self.send_json(429, {"error": QUOTA_MSG})
-        except ApiError as e:
+            return self.send_json(200, {"videos": [], "nextPageToken": "", "total": 0, "error": FRIENDLY_ERR})
+        except ApiError:
             if serve_stale("api") is not None:
                 return
-            return self.send_json(e.status, {"error": e.message})
+            return self.send_json(200, {"videos": [], "nextPageToken": "", "total": 0, "error": FRIENDLY_ERR})
         except Exception:
             if serve_stale("network") is not None:
                 return
-            return self.send_json(502, {"error": "YouTube bilan aloqa yo‘q. Internetni tekshiring."})
+            return self.send_json(200, {"videos": [], "nextPageToken": "", "total": 0, "error": FRIENDLY_ERR})
 
         videos = []
         for item in payload.get("items", []):
@@ -352,15 +363,15 @@ class H(BaseHTTPRequestHandler):
         except QuotaError:
             if cached is not None:
                 return self.send_json(200, {**cached, "stale": True})
-            return self.send_json(200, {"comments": [], "error": QUOTA_MSG})
-        except ApiError as e:
+            return self.send_json(200, {"comments": [], "error": FRIENDLY_ERR})
+        except ApiError:
             if cached is not None:
                 return self.send_json(200, {**cached, "stale": True})
-            return self.send_json(200, {"comments": [], "error": e.message})
+            return self.send_json(200, {"comments": [], "error": FRIENDLY_ERR})
         except Exception:
             if cached is not None:
                 return self.send_json(200, {**cached, "stale": True})
-            return self.send_json(200, {"comments": [], "error": "Izohlarni olishda xato"})
+            return self.send_json(200, {"comments": [], "error": FRIENDLY_ERR})
 
         items = []
         for item in payload.get("items", []):

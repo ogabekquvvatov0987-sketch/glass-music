@@ -6,15 +6,14 @@
 <meta name="theme-color" content="#080a12">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Glass Music</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
   color-scheme:dark;
-  --p:rgba(255,255,255,.09);--p2:rgba(255,255,255,.14);
-  --line:rgba(255,255,255,.16);--line2:rgba(255,255,255,.08);
+  --p:rgba(255,255,255,.11);--p2:rgba(255,255,255,.16);
+  --line:rgba(255,255,255,.2);--line2:rgba(255,255,255,.1);
   --t:#f4f6fb;--m:#9aa3b8;
   --g:linear-gradient(135deg,#c9b8ff,#6ee7ff);
-  --blur:blur(24px) saturate(1.25);--r:20px;--sh:0 14px 40px rgba(0,0,0,.38);
+  --blur:blur(28px) saturate(1.4);--r:20px;--sh:0 14px 40px rgba(0,0,0,.38);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
@@ -37,17 +36,17 @@ img{max-width:100%;display:block}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:7px;
   min-height:44px;padding:10px 18px;border-radius:999px;font-weight:700;font-size:13px;
-  border:1px solid var(--line);
-  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.04));
-  backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-  box-shadow:0 4px 14px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.2);
-  transition:transform .22s cubic-bezier(.32,.72,0,1),box-shadow .25s,opacity .15s,border-color .2s,filter .2s;color:var(--t);
+  border:1px solid rgba(255,255,255,.22);
+  background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.06));
+  backdrop-filter:blur(20px) saturate(1.35);-webkit-backdrop-filter:blur(20px) saturate(1.35);
+  box-shadow:0 4px 18px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.28);
+  transition:transform .25s cubic-bezier(.32,.72,0,1),box-shadow .28s,opacity .15s,border-color .2s,filter .2s,background .2s;color:var(--t);
 }
-.btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.28);border-color:rgba(255,255,255,.28)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35);border-color:rgba(255,255,255,.35);background:linear-gradient(160deg,rgba(255,255,255,.26),rgba(255,255,255,.1))}
 .btn:active{transform:scale(.96)}
 .btn:disabled{opacity:.5;pointer-events:none}
-.btn.pri{background:var(--g);color:#0a0b13;border:0;box-shadow:0 6px 20px rgba(139,92,246,.3),inset 0 1px 0 rgba(255,255,255,.4)}
-.btn.pri:hover{filter:brightness(1.08);box-shadow:0 10px 28px rgba(139,92,246,.45),inset 0 1px 0 rgba(255,255,255,.5);transform:translateY(-2px)}
+.btn.pri{background:var(--g);color:#0a0b13;border:0;box-shadow:0 6px 24px rgba(139,92,246,.35),inset 0 1px 0 rgba(255,255,255,.45)}
+.btn.pri:hover{filter:brightness(1.1);box-shadow:0 12px 32px rgba(139,92,246,.5),inset 0 1px 0 rgba(255,255,255,.55);transform:translateY(-2px)}
 .btn.ic{width:44px;height:44px;min-height:44px;padding:0;border-radius:50%}
 
 /* ---------- tuzilma ---------- */
@@ -63,7 +62,10 @@ img{max-width:100%;display:block}
 
 /* profil kartasi (sidebar va menyu uchun) */
 .pcard{
-  padding:14px 12px;border-radius:var(--r);border:1px solid var(--line);background:var(--p);
+  padding:14px 12px;border-radius:var(--r);border:1px solid rgba(255,255,255,.18);
+  background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
   display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;min-width:0;
 }
 .pcard .btn{width:100%;margin-top:4px}
@@ -101,23 +103,24 @@ img{max-width:100%;display:block}
 
 /* hero + qidiruv */
 .hero{
-  padding:20px 18px;border:1px solid var(--line);border-radius:24px;
-  background:linear-gradient(150deg,rgba(255,255,255,.1),rgba(255,255,255,.03));
-  backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);
-  box-shadow:var(--sh);margin-bottom:16px;position:relative;z-index:20;
+  padding:22px 18px;border:1px solid rgba(255,255,255,.18);border-radius:24px;
+  background:linear-gradient(150deg,rgba(255,255,255,.14),rgba(255,255,255,.04));
+  backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);
+  box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,.12);margin-bottom:16px;position:relative;z-index:20;
 }
-.ey{color:#5ad0ff;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:4px}
-h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-height:1.2;margin-bottom:4px}
+.ey{color:#5ad0ff;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-height:1.2;margin-bottom:14px}
 .sub{color:var(--m);font-size:13px;line-height:1.45;margin-bottom:14px}
 .sw{position:relative}
 .sfm{display:flex;gap:8px}
 .siw{flex:1;position:relative;min-width:0}
 .si{
-  width:100%;min-height:46px;border:1px solid var(--line);border-radius:999px;
-  padding:12px 40px 12px 40px;background:rgba(4,6,14,.55);outline:0;font-size:15px;
-  transition:border-color .2s,box-shadow .2s;
+  width:100%;min-height:48px;border:1px solid rgba(255,255,255,.18);border-radius:999px;
+  padding:12px 40px 12px 40px;background:rgba(4,6,14,.45);outline:0;font-size:15px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:border-color .25s,box-shadow .25s,background .2s;
 }
-.si:focus{border-color:rgba(180,160,255,.65);box-shadow:0 0 0 3px rgba(180,160,255,.12)}
+.si:focus{border-color:rgba(180,160,255,.7);box-shadow:0 0 0 4px rgba(180,160,255,.14);background:rgba(4,6,14,.55)}
 .si::-webkit-search-cancel-button,.si::-webkit-search-decoration{display:none;-webkit-appearance:none;appearance:none}
 .si[type=search]{-webkit-appearance:none;appearance:none}
 .sic{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--m);pointer-events:none}
@@ -209,8 +212,6 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 .mh{display:flex;justify-content:space-between;align-items:center;padding:14px;border-bottom:1px solid var(--line2)}
 .mh h3{font-size:15px}
 .mb{padding:14px;display:flex;flex-direction:column;gap:10px}
-#gWrap:empty{display:none}
-#gWrap{display:flex;justify-content:center;min-height:44px}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg label{font-size:11px;color:var(--m);font-weight:600}
 .fg input{min-height:44px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:rgba(4,6,14,.5);outline:0;font-size:15px;width:100%}
@@ -410,7 +411,6 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
   <section class="hero">
     <div class="ey">Glass Music</div>
     <h1>Musiqani izla.</h1>
-    <p class="sub">Qo‘shiq yoki ijrochi nomini yozing.</p>
     <div class="sw">
       <form class="sfm" id="form" autocomplete="off">
         <div class="siw">
@@ -471,9 +471,6 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
   <div class="md">
     <div class="mh"><h3>Hisob</h3><button class="btn ic" id="btnXA" type="button" aria-label="Yopish">✕</button></div>
     <div class="mb">
-      <button class="btn" type="button" id="btnG" style="width:100%">Google bilan kirish</button>
-      <div id="gWrap"></div>
-      <div class="sep">yoki qo‘lda kiriting</div>
       <form id="authF" style="display:flex;flex-direction:column;gap:10px">
         <div class="fg"><label for="nm">Ism</label><input id="nm" maxlength="40" autocomplete="given-name"></div>
         <div class="fg"><label for="sn">Familiya</label><input id="sn" maxlength="40" autocomplete="family-name"></div>
@@ -508,8 +505,7 @@ h1{font-size:clamp(22px,5vw,34px);font-weight:800;letter-spacing:-1px;line-heigh
 
 <script>
 "use strict";
-/* Google Client ID — server GOOGLE_CLIENT_ID muhit o‘zgaruvchisidan olinadi */
-const GCI = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
+const FRIENDLY_ERR = "Server xatosi. Iltimos, tizimda yangilanish ketmoqda. Tez orada hammasi yaxshilanadi.";
 
 const SK = "gm_settings", PK = "gm_profile", RK = "gm_recent";
 const DEF_SET = {autoNext: true, autoPlay: true};
@@ -618,35 +614,7 @@ async function toggleLike(v){
   }catch{ toast("Xato"); return liked.has(v.id) }
 }
 
-/* ---------- Google + kirish oynasi ---------- */
-function b64urlDecode(s){
-  s = s.replace(/-/g,"+").replace(/_/g,"/");
-  while(s.length % 4) s += "=";
-  const bin = atob(s);
-  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
-}
-window.onGoogle = function(resp){
-  try{
-    const payload = JSON.parse(b64urlDecode(resp.credential.split(".")[1]));
-    const parts = (payload.name || "").split(" ");
-    saveP({
-      name: parts[0] || payload.given_name || "",
-      surname: parts.slice(1).join(" ") || payload.family_name || "",
-      email: payload.email || "",
-      photo: payload.picture || null,
-      google_id: payload.sub || ""
-    });
-    closeAuth(); toast("Google orqali kirdingiz");
-  }catch(e){ toast("Google xatosi"); console.error(e) }
-};
-function tryGoogle(){
-  if(!GCI || GCI.includes("YOUR_GOOGLE")){ toast("Google Client ID sozlanmagan"); return }
-  if(!window.google?.accounts?.id){ toast("Google yuklanmoqda, bir ozdan keyin qayta bosing"); return }
-  google.accounts.id.initialize({client_id: GCI, callback: onGoogle});
-  const w = $("gWrap"); w.innerHTML = "";
-  google.accounts.id.renderButton(w, {type:"standard", theme:"filled_black", size:"large", width:300, text:"signin_with"});
-}
-
+/* ---------- kirish oynasi (profil) ---------- */
 function openAuth(){
   $("authM").classList.add("on");
   const p = profile();
@@ -663,7 +631,6 @@ $("btnUser").onclick = openAuth;
 $("btnXA").onclick = closeAuth;
 $("authM").onclick = e => { if(e.target === $("authM")) closeAuth() };
 document.querySelectorAll(".bOut").forEach(b => b.onclick = () => { clearP(); toast("Chiqildi") });
-$("btnG").onclick = tryGoogle;
 $("btnPhoto").onclick = () => $("photoIn").click();
 $("photoIn").onchange = e => {
   const f = e.target.files && e.target.files[0]; if(!f) return;
@@ -676,6 +643,7 @@ $("authF").onsubmit = e => {
   e.preventDefault();
   const name = $("nm").value.trim(), surname = $("sn").value.trim(), email = $("em").value.trim();
   if(!email){ toast("Email kerak"); return }
+  // Local + server DB ga saqlanadi (saveP -> syncU -> /api/user)
   saveP({name, surname, email, photo: photoData || null});
   closeAuth(); toast("Saqlandi");
 };
@@ -933,25 +901,34 @@ async function fetchVideos(append){
   try{
     const r = await fetch(url);
     const d = await r.json().catch(() => ({}));
-    if(!r.ok) throw new Error(d.error || ("Xato " + r.status));
     const list = (d.videos || []).filter(v => v && v.id)
       .map(v => ({...v, title: clean(v.title), channel: clean(v.channel)}));
+    // Server do‘stona xato qaytarsa ham 200 + empty bo‘lishi mumkin
+    if((!r.ok || d.error) && !list.length && !append){
+      const msg = FRIENDLY_ERR;
+      res.innerHTML = `<div class="empty">${esc(msg)}</div>`;
+      status.textContent = "Yangilanmoqda...";
+      videos = []; nextTok = ""; cnt.textContent = "0";
+      return false;
+    }
     videos = append ? videos.concat(list) : list;
     nextTok = d.nextPageToken || "";
     render(append);
-    if(d.stale){
-      status.textContent = "Keshdan (API limit/xato) — " + (videos.length ? videos.length + " ta" : "bo‘sh");
-      toast("YouTube limiti: keshdagi natijalar ko‘rsatildi", 3200);
+    if(d.stale && list.length){
+      status.textContent = videos.length ? "Tayyor · " + videos.length + " ta" : "Tayyor";
+    } else if(d.error && !list.length){
+      status.textContent = "Yangilanmoqda...";
+      if(!append) res.innerHTML = `<div class="empty">${esc(FRIENDLY_ERR)}</div>`;
     } else {
       status.textContent = videos.length ? "Tayyor" : "Topilmadi";
     }
     ok = list.length > 0;
   }catch(e){
     if(!append){
-      res.innerHTML = `<div class="empty">${esc(e.message)}</div>`;
-      status.textContent = e.message;
+      res.innerHTML = `<div class="empty">${esc(FRIENDLY_ERR)}</div>`;
+      status.textContent = "Yangilanmoqda...";
       videos = []; nextTok = ""; cnt.textContent = "0";
-    } else toast(e.message, 3500);
+    } else toast(FRIENDLY_ERR, 3500);
   }finally{
     $("btnS").disabled = false;
     more = false;
